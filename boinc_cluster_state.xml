@@ -6,8 +6,9 @@
 # See
 # https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
 #
-# The XML document produced references a stylesheet; this stylesheet
+# The XML document produced references a XSL stylesheet; this stylesheet
 # is used to transform the document into HTML, client-side. 
+# (Not to be confused with the CSS stylesheet, also used by the client.)
 #
 # Depends on: netcat
 #
@@ -17,6 +18,9 @@ readonly ETX=\\003 # control character used by BOINC GUI RPC
 
 readonly TEMP=/tmp/boinc_cluster_state-$$
 
+# the client will use this stylesheet to transform the result
+readonly XSLT=gui.xsl
+
 readonly cluster_nodes="bb10 bb15 bb30 bb34 bb37 bb43 bb47 bb55"
 readonly other_nodes="beaglebone680 beaglebone230 beaglebone369"
 
@@ -24,18 +28,18 @@ NODES=$( shuf --echo $cluster_nodes $other_nodes ) # randomize nodes
 NOW=$( date -Iseconds )
 
 # get state for all cluster nodes
-# this is executed concurrently
+# each task executes concurrently
 for node in $NODES
 do
 	echo "<boinc_gui_rpc_request>\n<get_state/>\n</boinc_gui_rpc_request>$ETX" | 
-	nc -q 1 $node $BOINC_GUI_RPC_PORT >$TEMP-$node & 
+		nc -q 1 $node $BOINC_GUI_RPC_PORT >$TEMP-$node & 
 done
 
-wait # for all to finish
+wait # for all tasks to finish
 
 cat <<_XML_
 <?xml version="1.0" encoding="UTF-8" ?>
-<?xml-stylesheet href="gui.xsl" type="text/xsl" ?>
+<?xml-stylesheet href="$XSLT" type="text/xsl" ?>
 
 <boinc_cluster_state created="$NOW">
 _XML_
