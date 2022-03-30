@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="boinc-gui.xsl" type="text/xsl" ?>
+<boinc_gui_rpc_reply>
+<simple_gui_info>
+<project>
+    <master_url>http://www.worldcommunitygrid.org/</master_url>
+    <project_name>World Community Grid</project_name>
+    <symstore></symstore>
+    <user_name></user_name>
+    <team_name></team_name>
+    <host_venue></host_venue>
+    <email_hash>b104e733b2fc55c7b806228136d3431d</email_hash>
+    <cross_project_id>0907c66a2b055092f13b757766277077</cross_project_id>
+    <external_cpid>f333f8d1365eba764be3bd8e53f921e0</external_cpid>
+    <cpid_time>1610578583.000000</cpid_time>
+    <user_total_credit>16975.165925</user_total_credit>
+    <user_expavg_credit>33.606823</user_expavg_credit>
+    <user_create_time>1610578583.000000</user_create_time>
+    <rpc_seqno>3624</rpc_seqno>
+    <userid>1136134</userid>
+    <teamid>0</teamid>
+    <hostid>7662424</hostid>
+    <host_total_credit>8399.914512</host_total_credit>
+    <host_expavg_credit>19.454835</host_expavg_credit>
+    <host_create_time>1610580632.000000</host_create_time>
+    <nrpc_failures>10</nrpc_failures>
+    <master_fetch_failures>0</master_fetch_failures>
+    <min_rpc_time>1647028722.170003</min_rpc_time>
+    <next_rpc_time>1646206413.557960</next_rpc_time>
+    <rec>10.533709</rec>
+    <rec_time>1646957035.505948</rec_time>
+    <resource_share>100.000000</resource_share>
+    <desired_disk_usage>0.000000</desired_disk_usage>
+    <duration_correction_factor>1.000000</duration_correction_factor>
+    <sched_rpc_pending>7</sched_rpc_pending>
+    <send_time_stats_log>0</send_time_stats_log>
+    <send_job_log>0</send_job_log>
+    <njobs_success>100</njobs_success>
+    <njobs_error>2</njobs_error>
+    <elapsed_time>19631690.213662</elapsed_time>
+    <last_rpc_time>1646942322.170003</last_rpc_time>
+    <dont_use_dcf/>
+    <rsc_backoff_time>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_time>
+    <rsc_backoff_interval>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_interval>
+<gui_urls>
+
+
+   <gui_url>
+      <name>Research Overview</name>
+      <description>Learn about the projects hosted at World Community Grid</description>
+      <url>https://www.worldcommunitygrid.org/research/viewAllProjects.do</url>
+   </gui_url>
+   <gui_url>
+      <name>News and Updates</name>
+      <description>The latest information about World Community Grid and its research projects</description>
+      <url>https://www.worldcommunitygrid.org/about_us/displayNews.do</url>
+   </gui_url>
+   <gui_url>
+      <name>My Contribution</name>
+      <description>Your statistics and settings</description>
+      <url>https://www.worldcommunitygrid.org/ms/viewMyMemberPage.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Results Status</name>
+      <description>View the status of your assigned work</description>
+      <url>https://www.worldcommunitygrid.org/ms/viewBoincResults.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Device Profiles</name>
+      <description>Update your device settings</description>
+      <url>https://www.worldcommunitygrid.org/ms/device/viewProfiles.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Forums</name>
+      <description>Visit the World Community Grid forums</description>
+      <url>https://www.worldcommunitygrid.org/forumLogin.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Help</name>
+      <description>Search for help in our help system</description>
+      <url>https://www.worldcommunitygrid.org/help/viewHelp.do</url>
+   </gui_url>
+</gui_urls>
+    <sched_priority>-0.000000</sched_priority>
+    <project_files_downloaded_time>0.000000</project_files_downloaded_time>
+    <project_dir>/var/lib/boinc-client/projects/www.worldcommunitygrid.org</project_dir>
+</project>
+<project>
+    <master_url>http://www.rechenkraft.net/yoyo/</master_url>
+    <project_name>yoyo@home</project_name>
+    <symstore></symstore>
+    <user_name>renw</user_name>
+    <team_name>L'Alliance Francophone</team_name>
+    <host_venue></host_venue>
+    <email_hash>d970cdd9cb064d81e83766fe983fb0c6</email_hash>
+    <cross_project_id>b3671873902a233a6603bedfeb86792a</cross_project_id>
+    <external_cpid></external_cpid>
+    <cpid_time>1642722304.000000</cpid_time>
+    <user_total_credit>27967.828975</user_total_credit>
+    <user_expavg_credit>879.056705</user_expavg_credit>
+    <user_create_time>1642722304.000000</user_create_time>
+    <rpc_seqno>435</rpc_seqno>
+    <userid>0</userid>
+    <teamid>0</teamid>
+    <hostid>510618</hostid>
+    <host_total_credit>1262.380885</host_total_credit>
+    <host_expavg_credit>72.871111</host_expavg_credit>
+    <host_create_time>1644515644.000000</host_create_time>
+    <nrpc_failures>0</nrpc_failures>
+    <master_fetch_failures>0</master_fetch_failures>
+    <min_rpc_time>0.000000</min_rpc_time>
+    <next_rpc_time>0.000000</next_rpc_time>
+    <rec>35.344153</rec>
+    <rec_time>1646957035.505948</rec_time>
+    <resource_share>100.000000</resource_share>
+    <desired_disk_usage>0.000000</desired_disk_usage>
+    <duration_correction_factor>1.194453</duration_correction_factor>
+    <sched_rpc_pending>0</sched_rpc_pending>
+    <send_time_stats_log>0</send_time_stats_log>
+    <send_job_log>0</send_job_log>
+    <njobs_success>8</njobs_success>
+    <njobs_error>412</njobs_error>
+    <elapsed_time>1565012.902383</elapsed_time>
+    <last_rpc_time>1646774944.365964</last_rpc_time>
+    <verify_files_on_app_start/>
+    <rsc_backoff_time>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_time>
+    <rsc_backoff_interval>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_interval>
+<gui_urls>
+
+
+    <gui_url>
+        <name>My account</name>
+        <description>View your account information and credit totals</description>
+        <url>http://www.rechenkraft.net/yoyo/home.php</url>
+    </gui_url>
+    <ifteam>
+        <gui_url>
+            <name>My team</name>
+            <description>Info about L'Alliance Francophone</description>
+            <url>http://www.rechenkraft.net/yoyo/team_display.php?teamid=7</url>
+        </gui_url>
+    </ifteam>
+    <gui_url>
+        <name>Forum</name>
+        <description>Get help about yoyo@home</description>
+        <url>http://www.rechenkraft.net/forum/viewforum.php?f=66</url>
+    </gui_url>
+    <gui_url>
+        <name>Chat</name>
+        <description>Chat with other user about distributed computing</description>
+        <url>http://www.rechenkraft.net/wiki/index.php?title=Rechenkraft:Chat/en</url>
+    </gui_url>
+    <gui_url>
+        <name>Rechenkraft.net</name>
+        <description>Mehr Projekte</description>
+        <url>http://www.rechenkraft.net</url>
+    </gui_url>
+    <gui_url>
+        <name>- Donation -</name>
+        <description>Make a donation for the running costs</description>
+        <url>http://www.rechenkraft.net/yoyo/donations.php</url>
+    </gui_url>
+</gui_urls>
+    <sched_priority>-1.041667</sched_priority>
+    <project_files_downloaded_time>0.000000</project_files_downloaded_time>
+    <project_dir>/var/lib/boinc-client/projects/www.rechenkraft.net_yoyo</project_dir>
+</project>
+<result>
+    <name>ecm_cn_1646765410_2_2278M_1737_P1_0</name>
+    <wu_name>ecm_cn_1646765410_2_2278M_1737_P1</wu_name>
+    <platform>arm-unknown-linux-gnueabihf</platform>
+    <version_num>70501</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.rechenkraft.net/yoyo/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1647635329.000000</report_deadline>
+    <received_time>1646771329.952576</received_time>
+    <estimated_cpu_time_remaining>163736.117458</estimated_cpu_time_remaining>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>70501</app_version_num>
+    <slot>0</slot>
+    <pid>22653</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>168381.400000</checkpoint_cpu_time>
+    <fraction_done>0.586910</fraction_done>
+    <current_cpu_time>182963.500000</current_cpu_time>
+    <elapsed_time>179500.075878</elapsed_time>
+    <swap_size>3276800.000000</swap_size>
+    <working_set_size>1896448.000000</working_set_size>
+    <working_set_size_smoothed>1896448.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+   <progress_rate>0.000003</progress_rate>
+</active_task>
+</result>
+</simple_gui_info>
+</boinc_gui_rpc_reply>

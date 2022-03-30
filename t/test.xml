@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="test.xsl" type="text/xsl" ?>
+<doc>
+	<head>header</head>
+	<body>
+		<summary>
+			<id>aaa</id>
+			<content>chapter 1 summary</content>
+		</summary>
+		<summary>
+			<id>bbb</id>
+			<content>chapter 2 summary</content>
+		</summary>
+		<chapter>
+			<title>first chapter</title>
+			<sid>aaa</sid>
+		</chapter>
+		<chapter>
+			<title>second chapter</title>
+			<sid>bbb</sid>
+		</chapter>
+	</body>
+</doc>
