@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<?xml-stylesheet href="gui.xsl" type="text/xsl" ?>
 
 <boinc_cluster_state created="Sat 19 Mar 2022 08:56:17 PM PDT">
 <boinc_client hostname="beaglebone680">
