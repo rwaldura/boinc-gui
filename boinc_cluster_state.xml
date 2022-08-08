@@ -32,7 +32,7 @@ NOW=$( date -Iseconds )
 for node in $NODES
 do
 	echo "<boinc_gui_rpc_request>\n<get_state/>\n</boinc_gui_rpc_request>$ETX" | 
-		nc -q 1 $node $BOINC_GUI_RPC_PORT >$TEMP-$node & 
+		nc -q 1 $node $BOINC_GUI_RPC_PORT >$TEMP-$node 2>$TEMP-$node.err & 
 done
 
 wait # for all tasks to finish
