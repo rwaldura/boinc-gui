@@ -15,12 +15,12 @@
 ##############################################################################
 
 zmodload zsh/net/tcp
- 
-readonly BOINC_GUI_RPC_ETX=\\003 # control character used by BOINC GUI RPC
-readonly BOINC_GUI_PASSWORD=aoeu0
 
-readonly BOINC_GUI_RPC_PORT=31416
-readonly BOINC_GUI_HOST=$1
+readonly RPC_HOST=$1
+readonly RPC_PORT=31416
+readonly RPC_PASSWORD=aoeu0
+readonly RPC_REQUEST=$2
+readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
 ##############################################################################
 debug()
@@ -29,25 +29,28 @@ debug()
 }
 
 ##############################################################################
+request()
+{
+	print -u$RPC_SERVER "
+<boinc_gui_rpc_request>
+$1
+</boinc_gui_rpc_request>$RPC_ETX"
+}
+
+##############################################################################
 auth1()
 {
-	server=$1
-	
-	print -u$server "
-<boinc_gui_rpc_request>
-	<auth1/>
-</boinc_gui_rpc_request>
-$BOINC_GUI_RPC_ETX"
+	request '<auth1/>'
 
-	read -u$server line # should be "<boinc_gui_rpc_reply>"
+	read -u$RPC_SERVER line # should be "<boinc_gui_rpc_reply>"
 	debug "1-$line"
 	
-	read -u$server line	
+	read -u$RPC_SERVER line	
 	debug "1-$line"
 	nonce=$( expr "$line" : '<nonce>\([0-9]*\.[0-9]*\)')
 	debug "nonce=$nonce"
 	
-	read -u$server line # should be "</boinc_gui_rpc_reply>"
+	read -u$RPC_SERVER line # should be "</boinc_gui_rpc_reply>"
 	debug "1-$line"
 
 	print "$nonce"
@@ -56,29 +59,22 @@ $BOINC_GUI_RPC_ETX"
 ##############################################################################
 auth2()
 {
-	server=$1
-	nonce="$2"
+	nonce="$1"
 	
-	nonce_hash=$( md5 -q -s "$nonce$BOINC_GUI_PASSWORD" )
+	nonce_hash=$( md5 -q -s "$nonce$RPC_PASSWORD" )
 	debug "nonce_hash=$nonce_hash"
 	
-	print -u$server "
-<boinc_gui_rpc_request>
-	<auth2>
-		<nonce_hash>$nonce_hash</nonce_hash>
-	</auth2>
-</boinc_gui_rpc_request>
-$BOINC_GUI_RPC_ETX"
-	
-	read -u$server line # should be "<boinc_gui_rpc_reply>"
+	request "<auth2> <nonce_hash>$nonce_hash</nonce_hash> </auth2>"
+		
+	read -u$RPC_SERVER line # should be "<boinc_gui_rpc_reply>"
 	debug "2-$line"
 	
-	read -u$server line	
+	read -u$RPC_SERVER line	
 	debug "2-$line"
 	test "$line" = '<authorized/>'
 	authorized=$?
 	
-	read -u$server line # should be "</boinc_gui_rpc_reply>"
+	read -u$RPC_SERVER line # should be "</boinc_gui_rpc_reply>"
 	debug "2-$line"
 	
 	return $authorized	
@@ -89,22 +85,14 @@ $BOINC_GUI_RPC_ETX"
 # see http://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol 
 authenticate()
 {
-	server=$1
-	
-	nonce=$( auth1 $server )
-	debug "nonce=$nonce"
-
-	auth2 $server "$nonce"
+	auth2 $( auth1 )
 	return $?
 }
 
 ##############################################################################
-pump()
-{
-	server=$1
-	
-	# pump data present on stdin to the server
-	cat >&$server
+issue()
+{	
+	request "<$1/>"
 
 	# close the socket for writing:
 	#exec {server}>&-
@@ -117,7 +105,7 @@ pump()
 	# Instead, I have to do this ugly loop:
 	
 	# read output from server, print to stdout
-	while read -u$server line
+	while read -u$RPC_SERVER line
 	do
 		print "$line"
 		[[ "$line" = '</boinc_gui_rpc_reply>' ]] && return
@@ -127,17 +115,18 @@ pump()
 ##############################################################################
 # main
 
-# open socket to BOINC GUI server
-ztcp $BOINC_GUI_HOST $BOINC_GUI_RPC_PORT
-integer server=$REPLY
+# open socket to BOINC GUI RPC server
+ztcp "$RPC_HOST" $RPC_PORT
+readonly RPC_SERVER="$REPLY"
 
-# authenticate using file descriptor $server
-if authenticate $server
+# authenticate using file descriptor $RPC_SERVER
+if [[ "$RPC_SERVER" ]] && authenticate
 then
 	debug "authenticated!"
-	pump $server
+	issue "$RPC_REQUEST"
 else
-	debug "auth failed"
+	print -u2 "authentication failure"
+	exit 1
 fi
 
 # close all opened sockets
