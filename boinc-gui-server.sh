@@ -25,13 +25,14 @@ readonly BOINC_GUI_HOST=$1
 ##############################################################################
 debug()
 {
-	print -u2 "++ $@"
+	[[ "$DEBUG" ]] && print -u2 "++ $@"
 }
 
 ##############################################################################
 auth1()
 {
 	server=$1
+	
 	print -u$server "
 <boinc_gui_rpc_request>
 	<auth1/>
@@ -60,6 +61,7 @@ auth2()
 	
 	nonce_hash=$( md5 -q -s "$nonce$BOINC_GUI_PASSWORD" )
 	debug "nonce_hash=$nonce_hash"
+	
 	print -u$server "
 <boinc_gui_rpc_request>
 	<auth2>
@@ -104,11 +106,22 @@ pump()
 	# pump data present on stdin to the server
 	cat >&$server
 
-	# close the socket for writing 
+	# close the socket for writing:
 	#exec {server}>&-
-
+	# Unfortunately this closes the entire socket, not just for writing.
+	# "exec {fd}>&-" and "exec {fd}<&-" are functionally equivalent,
+	# they both close the entire fd.
+	# What I need is shutdown(2) but it doesn't appear implemented in ztcp.
+	# With it, I could then just: 
+	#cat <&$server
+	# Instead, I have to do this ugly loop:
+	
 	# read output from server, print to stdout
-	cat <&$server
+	while read -u$server line
+	do
+		print "$line"
+		[[ "$line" = '</boinc_gui_rpc_reply>' ]] && return
+	done
 }
 
 ##############################################################################
