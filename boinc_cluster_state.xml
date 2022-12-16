@@ -25,8 +25,8 @@ readonly bb_nodes="bb10 bb15 bb30 bb34 bb37 bb43 bb47 bb55"
 readonly droid_nodes="10.10.10.23 10.10.10.38 10.10.10.39"
 
 if shuf </dev/null	# "shuf" is available
-then
-	NODES=$( shuf --echo $bb_nodes $other_nodes $droid_nodes ) # shuffle nodes
+then # shuffle nodes
+	NODES=$( shuf --echo $bb_nodes $other_nodes $droid_nodes ) 
 else
 	NODES="$bb_nodes $other_nodes $droid_nodes"
 fi
