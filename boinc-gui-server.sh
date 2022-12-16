@@ -18,7 +18,7 @@ zmodload zsh/net/tcp
 readonly RPC_HOST=$1
 readonly RPC_PORT=31416
 readonly RPC_PASSWORD=aoeu0
-readonly RPC_REQUEST=$2
+readonly RPC_REQUEST=${2:-get_host_info}
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
 ##############################################################################
@@ -106,8 +106,8 @@ issue()
 	# read output from server, print to stdout
 	while read -u$RPC_SERVER line
 	do
-		print "$line"
-		[[ "$line" = '</boinc_gui_rpc_reply>' ]] && return
+		print -- "$line"
+		[[ '</boinc_gui_rpc_reply>' = "$line" ]] && return
 	done
 }
 
