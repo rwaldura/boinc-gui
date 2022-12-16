@@ -1,13 +1,12 @@
 #!/bin/zsh
 ##############################################################################
 #
-# Replace stdin with an _authenticated_ channel to a BOINC GUI server.
-# This channel is open for output only, i.e. it can be written to. It is used
-# to send requests to a BOINC client.
+# Manage a BOINC client, by sending a single command (a request) to its GUI
+# RPC server.
 # The output of this program, is the response of the BOINC client.
 #
 # Example:
-# $ echo "<get_state/>\003" | boinc-gui-server.sh host.example.com > response.xml
+# $ boinc-gui-server.sh host.example.com get_host_info > response.xml
 #
 # Authentication protocol is defined at 
 # http://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol 
