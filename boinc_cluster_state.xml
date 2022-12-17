@@ -35,7 +35,7 @@ fi
 # each task executes concurrently
 for node in $NODES
 do
-	./boinc-gui-server.sh $node get_state >$TEMP-$node & 
+	./boinc-gui-server.sh $node get_state >$TEMP-$node 2>$TEMP-$node.err & 
 done
 
 wait # for all tasks to finish

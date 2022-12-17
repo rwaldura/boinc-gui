@@ -13,13 +13,14 @@
 #
 ##############################################################################
 
-zmodload zsh/net/tcp
-
-readonly RPC_HOST=$1
-readonly RPC_PORT=31416
 readonly RPC_PASSWORD=aoeu0
-readonly RPC_REQUEST=${2:-get_host_info}
+readonly RPC_PORT=31416
+readonly RPC_HOST=$1
+
+readonly RPC_REQUEST=${2:-get_host_info} # default command
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
+
+zmodload zsh/net/tcp
 
 ##############################################################################
 debug()
@@ -46,7 +47,7 @@ auth1()
 	
 	read -u$RPC_SERVER line	
 	debug "1-$line"
-	nonce=$( expr "$line" : '<nonce>\([0-9]*\.[0-9]*\)')
+	nonce=$( expr "$line" : '<nonce>\([0-9]*\.[0-9]*\)' )
 	debug "nonce=$nonce"
 	
 	read -u$RPC_SERVER line # should be "</boinc_gui_rpc_reply>"
@@ -80,11 +81,12 @@ auth2()
 }
 
 ##############################################################################
-# authentication protocol using file descriptor $server
+# authentication protocol using file descriptor $RPC_SERVER
 # see http://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol 
 authenticate()
 {
-	auth2 $( auth1 )
+	nonce=$( auth1 )
+	auth2 "$nonce"
 	return $?
 }
 
@@ -94,13 +96,13 @@ issue()
 	request "<$1/>"
 
 	# close the socket for writing:
-	#exec {server}>&-
+	#exec {RPC_SERVER}>&-
 	# Unfortunately this closes the entire socket, not just for writing.
 	# "exec {fd}>&-" and "exec {fd}<&-" are functionally equivalent,
 	# they both close the entire fd.
 	# What I need is shutdown(2) but it doesn't appear implemented in ztcp.
 	# With it, I could then just: 
-	#cat <&$server
+	#cat <&$RPC_SERVER
 	# Instead, I have to do this ugly loop:
 	
 	# read output from server, print to stdout
