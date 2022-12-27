@@ -6,7 +6,7 @@
 # The output of this program, is the response of the BOINC client.
 #
 # Example:
-# $ boinc-gui-server.sh host.example.com get_host_info > response.xml
+# $ boinc-gui-rpc.sh host.example.com get_host_info > response.xml
 #
 # Authentication protocol is defined at 
 # http://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol 
