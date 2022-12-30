@@ -14,13 +14,13 @@
 ##############################################################################
 
 readonly RPC_PASSWORD=aoeu0
-readonly RPC_PORT=31416
 readonly RPC_HOST=${1:?"Hostname required"}
+readonly RPC_PORT=31416
 
 readonly RPC_REQUEST=${2:-get_host_info} # default command
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
-zmodload zsh/net/tcp
+zmodload zsh/net/tcp # to create a socket
 
 ##############################################################################
 debug()

@@ -1,4 +1,5 @@
 #!/bin/sh
+##############################################################################
 #
 # Get cluster state as one big XML document. 
 # Issue a BOINC GUI RPC request "get_state" against each cluster
@@ -11,6 +12,11 @@
 # (Not to be confused with the CSS stylesheet, also used by the client.)
 #
 
+##############################################################################
+readonly BB_NODES="bb10 bb15 bb30 bb34 bb37 bb43 bb47 bb55"
+#readonly OTHER_NODES="beaglebone680 beaglebone230 beaglebone369"
+readonly DROID_NODES="10.10.10.23 10.10.10.38 10.10.10.39"
+
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
 readonly TEMP=/tmp/boinc_cluster_state-$$
@@ -20,18 +26,15 @@ readonly XSLT=gui.xsl
 
 readonly NOW=$( date -Iseconds )
 
-readonly bb_nodes="bb10 bb15 bb30 bb34 bb37 bb43 bb47 bb55"
-#readonly other_nodes="beaglebone680 beaglebone230 beaglebone369"
-readonly droid_nodes="10.10.10.23 10.10.10.38 10.10.10.39"
-
 if shuf </dev/null	# "shuf" is available
 then # shuffle nodes
-	NODES=$( shuf --echo $bb_nodes $other_nodes $droid_nodes ) 
+	NODES=$( shuf --echo $BB_NODES $OTHER_NODES $DROID_NODES ) 
 else
-	NODES="$bb_nodes $other_nodes $droid_nodes"
+	NODES="$BB_NODES $OTHER_NODES $DROID_NODES"
 fi
 
-# get state for all cluster nodes
+##############################################################################
+# get state for all cluster nodes;
 # each task executes concurrently
 for node in $NODES
 do
@@ -40,6 +43,8 @@ done
 
 wait # for all tasks to finish
 
+##############################################################################
+# gather all output into one big XML doc
 cat <<_XML_
 <?xml version="1.0" encoding="UTF-8" ?>
 <?xml-stylesheet href="$XSLT" type="text/xsl" ?>
@@ -56,4 +61,6 @@ done
 
 echo "</boinc_cluster_state>"
 
+##############################################################################
+# cleanup
 rm $TEMP-*
