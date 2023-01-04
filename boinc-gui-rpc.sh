@@ -57,11 +57,28 @@ auth1()
 }
 
 ##############################################################################
+compute_hash()
+{
+	input="$1"
+	
+	if md5 </dev/null >/dev/null
+	then # md5 is available (MacOS)
+		md5 -q -s "$input"
+	elif md5sum </dev/null >/dev/null
+	then # use md5sum instead (Linux, typically)
+		print -n "$input" | md5sum | cut -d ' ' -f1
+	else # none 
+		print -u2 "Unable to compute hash: no command available"
+		exit 1
+	fi		
+}
+
+##############################################################################
 auth2()
 {
 	nonce="$1"
 	
-	nonce_hash=$( md5 -q -s "$nonce$RPC_PASSWORD" )
+	nonce_hash=$( compute_hash "$nonce$RPC_PASSWORD" )
 	debug "nonce_hash=$nonce_hash"
 	
 	request "<auth2> <nonce_hash>$nonce_hash</nonce_hash> </auth2>"
