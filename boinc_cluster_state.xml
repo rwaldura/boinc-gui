@@ -15,7 +15,7 @@
 ##############################################################################
 readonly BB_NODES=( bb{10,15,30,34,37,47,43,55} )
 readonly OTHER_NODES=( beaglebone230 beaglebone369 ) # beaglebone680 )
-readonly DROID_NODES=( 10.10.10.24 10.10.10.28 ) # 10.10.10.39 )
+readonly DROID_NODES=( 10.10.10.24 10.10.10.28 10.10.10.38 )
 
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
@@ -64,7 +64,12 @@ _XML_
 for node in $NODES
 do
 	print "<boinc_client hostname=\"$node\">"
-	tr $RPC_ETX \\n <$TEMP-$node
+	if [[ $DEBUG ]]
+	then 
+		print "including $TEMP-$node"
+	else
+		tr $RPC_ETX \\n <$TEMP-$node
+	fi
 	print "</boinc_client>"
 done 
 
