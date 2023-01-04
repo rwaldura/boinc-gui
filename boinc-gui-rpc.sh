@@ -68,7 +68,7 @@ compute_hash()
 	then # use md5sum instead (Linux, typically)
 		print -n "$input" | md5sum | cut -d ' ' -f1
 	else # none 
-		print -u2 "Unable to compute hash: no command available"
+		print -u2 "Unable to compute hash: no MD5 command available"
 		exit 1
 	fi		
 }
@@ -144,7 +144,7 @@ then
 	debug "authenticated!"
 	issue "$RPC_REQUEST"
 else
-	print -u2 "authentication failure"
+	print -u2 "Authentication failure: aborted"
 	exit 1
 fi
 

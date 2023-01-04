@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 ##############################################################################
 #
 # Get cluster state as one big XML document. 
@@ -13,9 +13,9 @@
 #
 
 ##############################################################################
-readonly BB_NODES="bb10 bb15 bb30 bb34 bb37 bb43 bb47 bb55"
-#readonly OTHER_NODES="beaglebone680 beaglebone230 beaglebone369"
-readonly DROID_NODES="10.10.10.24 10.10.10.28 10.10.10.39"
+readonly BB_NODES=( bb{10,15,30,34,37,47,43,55} )
+readonly OTHER_NODES=( beaglebone230 beaglebone369 ) # beaglebone680 )
+readonly DROID_NODES=( 10.10.10.24 10.10.10.28 ) # 10.10.10.39 )
 
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
@@ -26,11 +26,19 @@ readonly XSLT=gui.xsl
 
 readonly NOW=$( date -Iseconds )
 
+##############################################################################
+debug()
+{
+	[[ "$DEBUG" ]] && print -u2 "++ $@"
+}
+
+##############################################################################
+# gather nodes
 if shuf </dev/null	# "shuf" is available
 then # shuffle nodes
 	NODES=$( shuf --echo $BB_NODES $OTHER_NODES $DROID_NODES ) 
 else
-	NODES="$BB_NODES $OTHER_NODES $DROID_NODES"
+	NODES=( $BB_NODES $OTHER_NODES $DROID_NODES )
 fi
 
 ##############################################################################
@@ -39,6 +47,7 @@ fi
 for node in $NODES
 do
 	./boinc-gui-rpc.sh $node get_state >$TEMP-$node 2>$TEMP-$node.err & 
+	debug "$! is getting state for $node"
 done
 
 wait # for all tasks to finish
@@ -54,12 +63,12 @@ _XML_
 
 for node in $NODES
 do
-	echo "<boinc_client hostname=\"$node\">"
+	print "<boinc_client hostname=\"$node\">"
 	tr $RPC_ETX \\n <$TEMP-$node
-	echo "</boinc_client>"
+	print "</boinc_client>"
 done 
 
-echo "</boinc_cluster_state>"
+print "</boinc_cluster_state>"
 
 ##############################################################################
 # cleanup
