@@ -7,15 +7,35 @@ body {
 	font-family: "Google Sans";
 }
 
+#top_left {
+/*	background-color: yellow;*/
+	width: 600px; 
+}
+
+#top_right {
+/*	background-color: red;*/
+    position: absolute;	
+	top: 5px;
+	right: 5px;
+}
+
+#bot_left {
+	background-color: pink;
+	width: 600px; 
+}
+
 .chart_title {
 	font-size: 14pt;	
 	text-align: center;
 	font-weight: bold;
 }
 
-#chart_div {
-	width: 640px; 
-	height: 480px;
+#pie_chart_div {
+	height: 260px;
+}
+
+#time_chart_div {
+	height: 300px;
 }
 
 #boinc_cluster_state {
@@ -52,9 +72,9 @@ body {
 	visibility: hidden;
 	z-index: 1;
 	position: absolute;
-	width: 60px;	
+	width: 100px;	
 	top: -5px;
-	left: 105%; 
+	left: 10%; 
 	background-color: yellow;
 	border-color: gray;
 	border-style: solid;

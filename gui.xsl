@@ -41,7 +41,7 @@
 							[ 1 ], // "app" column
 							[ { 'column': 4, 'aggregation': google.visualization.data.sum, 'type': 'number' } ] );
 						
-						var chart = new google.visualization.PieChart( document.getElementById('chart_div') );
+						var chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
 						chart.draw(
 							grouped, 
 							{	// chart options
@@ -51,17 +51,17 @@
 				</script>
 			</head>
 			<body>
-				<table>
-					<tr>
-						<td valign="top">
-							<div class="chart_title">Cluster Utilization by App</div>
-							<div id="chart_div"/> <!-- pie chart -->
-						</td>
-						<td>
-							<x:apply-templates mode="html" />
-						</td>
-					</tr>
-				</table>
+				<div id="top_left">
+					<div class="chart_title">Instant Cluster Utilization</div>
+					<div id="pie_chart_div"/> <!-- pie chart -->
+				</div>
+				<div id="top_right">
+					<x:apply-templates mode="html" />
+				</div>
+				<div id="bot_left">
+					<div class="chart_title">Cluster Utilization</div>
+					<div id="time_chart_div"/> <!-- time chart -->
+				</div>
 			</body>
 		</html>
 	</x:template>
@@ -88,7 +88,7 @@
 			'<x:value-of select="$app/user_friendly_name" />',		// app
 			'<x:value-of select="$project/project_name" />',		// project
 			'<x:value-of select="$host/domain_name" />',			// host
-			<x:value-of select="$host/p_fpops + $host/p_iops" /> 	// ops
+			<x:value-of select="round(($host/p_fpops + $host/p_iops) div 1000000)" /> 	// ops
 			] );			
 	</x:template>	
 
