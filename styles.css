@@ -7,6 +7,12 @@ body {
 	font-family: "Google Sans";
 }
 
+.chart_title {
+	font-size: 14pt;	
+	text-align: center;
+	font-weight: bold;
+}
+
 #chart_div {
 	width: 640px; 
 	height: 480px;
@@ -18,11 +24,16 @@ body {
 	border-color: #e8e8e8;
 }
 
+.note {
+	font-size: 80%;
+	text-align: right;
+}
+
 /* magic to color alternating rows */
 #boinc_cluster_state tr:nth-child(odd) { background: #e8e8e8 }
 
 #boinc_cluster_state th {
-	background-color: black;
+	background-color: gray;
 	color: white;
 	padding: 3px;
 }

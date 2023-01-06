@@ -21,16 +21,16 @@
 				<link rel="stylesheet" href="styles.css" />
 				<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js" />
 				<script type="text/javascript">
-			        google.charts.load('current', { 'packages': [ 'corechart' ] });
+			        google.charts.load('current', { 'packages': [ 'corechart', 'table' ] });
 
 			        google.charts.setOnLoadCallback( function () 
 					{
 	  					var dt = new google.visualization.DataTable();
-	  					data.addColumn('string', 'result');
-	  					data.addColumn('string', 'app');
-	  					data.addColumn('string', 'project');
-	  					data.addColumn('string', 'host');
-	  					data.addColumn('number', 'ops');
+	  					dt.addColumn('string', 'result');
+	  					dt.addColumn('string', 'app');
+	  					dt.addColumn('string', 'project');
+	  					dt.addColumn('string', 'host');
+	  					dt.addColumn('number', 'ops');
 		
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
@@ -41,11 +41,11 @@
 							[ 1 ], // "app" column
 							[ { 'column': 4, 'aggregation': google.visualization.data.sum, 'type': 'number' } ] );
 						
-						var chart = new google.visualization.Table( document.getElementById('chart_div') );
+						var chart = new google.visualization.PieChart( document.getElementById('chart_div') );
 						chart.draw(
 							grouped, 
 							{	// chart options
-								'title': 'Cluster Utilization'
+								fontName: "Google Sans", // matches styles.css
 							} );
 					} );					
 				</script>
@@ -53,8 +53,9 @@
 			<body>
 				<table>
 					<tr>
-						<td>
-							blub <div id="chart_div"/> bleb <!-- pie chart -->
+						<td valign="top">
+							<div class="chart_title">Cluster Utilization by App</div>
+							<div id="chart_div"/> <!-- pie chart -->
 						</td>
 						<td>
 							<x:apply-templates mode="html" />
@@ -82,7 +83,7 @@
 		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name]" />
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
-		data.addRow( [
+		dt.addRow( [
 			'<x:value-of select="name" />',							// result
 			'<x:value-of select="$app/user_friendly_name" />',		// app
 			'<x:value-of select="$project/project_name" />',		// project
@@ -95,7 +96,6 @@
 		Create a HTML table displaying each task in progress. 
 	--> 
 	<x:template match="boinc_cluster_state" mode="html">
-		<div><x:value-of select="@created" /></div>
 		<table id="boinc_cluster_state">
 			<tr>
 				<th>App</th>
@@ -108,6 +108,9 @@
 				<x:sort select="../host_info/domain_name" />
 			</x:apply-templates>
 		</table>
+		<div class="note">
+			<p>Updated <x:value-of select="@created" /></p>
+		</div>		
 	</x:template>
 
 	<!-- results with active tasks -->
