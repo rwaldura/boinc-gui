@@ -25,16 +25,25 @@
 
 			        google.charts.setOnLoadCallback( function () 
 					{
-	  					var data = new google.visualization.DataTable();
+	  					var dt = new google.visualization.DataTable();
+	  					data.addColumn('string', 'result');
 	  					data.addColumn('string', 'app');
-	  					data.addColumn('number', 'flops');
+	  					data.addColumn('string', 'project');
+	  					data.addColumn('string', 'host');
+	  					data.addColumn('number', 'ops');
 		
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
 
-						var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+						// SELECT app, SUM(ops) FROM dt GROUP BY app
+						var grouped = google.visualization.data.group(
+							dt,
+							[ 1 ], // "app" column
+							[ { 'column': 4, 'aggregation': google.visualization.data.sum, 'type': 'number' } ] );
+						
+						var chart = new google.visualization.Table( document.getElementById('chart_div') );
 						chart.draw(
-							data, 
+							grouped, 
 							{	// chart options
 								'title': 'Cluster Utilization'
 							} );
@@ -42,60 +51,99 @@
 				</script>
 			</head>
 			<body>
-				<x:apply-templates />
+				<table>
+					<tr>
+						<td>
+							blub <div id="chart_div"/> bleb <!-- pie chart -->
+						</td>
+						<td>
+							<x:apply-templates mode="html" />
+						</td>
+					</tr>
+				</table>
 			</body>
 		</html>
 	</x:template>
-	
-	<!-- populate the data table -->
+
+	<!-- ************************************************************************
+		Create data table. 
+	-->	
 	<x:template match="boinc_cluster_state" mode="dataTable">
-		<!-- across all apps that have an active task -->
-		<x:for-each select="set:distinct(//result[active_task]/../app)">
-			data.addRow( [
-				'<x:value-of select="user_friendly_name" />' ,
-				<x:value-of select="sum(//app_version[app_name = current()/name]/flops) div 1000000"/>
-				] );			
-		</x:for-each>
+		<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result" mode="dataTable">
+			<x:sort select="name" /> <!-- to group the same apps together -->
+		</x:apply-templates>
+	</x:template>	
+	
+	<!-- results with active tasks -->
+	<x:template match="result[active_task]" mode="dataTable">
+		<!-- get related structs -->
+		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
+		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
+		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name]" />
+		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
+		<x:variable name="host"        select="../host_info" />
+		data.addRow( [
+			'<x:value-of select="name" />',							// result
+			'<x:value-of select="$app/user_friendly_name" />',		// app
+			'<x:value-of select="$project/project_name" />',		// project
+			'<x:value-of select="$host/domain_name" />',			// host
+			<x:value-of select="$host/p_fpops + $host/p_iops" /> 	// ops
+			] );			
 	</x:template>	
 
-	<x:template match="boinc_cluster_state">
+	<!-- ************************************************************************
+		Create a HTML table displaying each task in progress. 
+	--> 
+	<x:template match="boinc_cluster_state" mode="html">
 		<div><x:value-of select="@created" /></div>
-		<table>
+		<table id="boinc_cluster_state">
 			<tr>
-				<td><div id="chart_div"/></td>
-				<td>
-					<table id="boinc_cluster_state">
-						<tr>
-							<th>App</th>
-							<th>Project</th>
-							<th>Node</th>
-							<th/>
-						</tr>
-						<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result">
-							<x:sort select="name" /> <!-- to group the same apps together -->
-						</x:apply-templates>
-					</table>
-				</td>
+				<th>App</th>
+				<th>Project</th>
+				<th>Node</th>
+				<th/>
 			</tr>
+			<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result" mode="html">
+				<x:sort select="name" /> <!-- to group the same apps together -->
+				<x:sort select="../host_info/domain_name" />
+			</x:apply-templates>
 		</table>
 	</x:template>
 
 	<!-- results with active tasks -->
-	<x:template match="result[active_task]">
+	<x:template match="result[active_task]" mode="html">
 		<!-- get related structs -->
-		<x:variable name="project"      select="../project[master_url = current()/project_url]" />
-		<x:variable name="workunit"     select="../workunit[name = current()/wu_name]" />
-		<x:variable name="app_version"  select="../app_version[app_name = $workunit/app_name]" />
-		<x:variable name="app"          select="../app[name = $workunit/app_name]" />
+		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
+		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
+		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name]" />
+		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
+		<x:variable name="host"        select="../host_info" />
 		<tr>
 			<td>
 				<x:value-of select="$app/user_friendly_name" /> 
+				<x:comment>
+					<x:value-of select="$app_version/app_name" /> 
+					<x:value-of select="$app_version/version_num" />
+				</x:comment>
 			</td>
 			<td>
-				<x:value-of select="$project/project_name" /> 
+			    <a>
+					<x:attribute name="href">
+						<x:value-of select="$project/master_url" />
+					</x:attribute>
+					<x:value-of select="$project/project_name" /> 
+			     </a>
 			</td>
 			<td>
-				<x:value-of select="../host_info/domain_name" />				
+				<div class="tooltip">
+					<x:value-of select="$host/domain_name" />				
+					<span class="tooltip-text">
+						<x:value-of select="$host/product_name" />
+						<x:comment>
+							<x:value-of select="$host/os_version" />							
+						</x:comment>
+					</span>
+				</div>
 			</td>
 			<td>
 				<x:apply-templates />
@@ -121,6 +169,7 @@
 		
 	<!-- ignore stray text in all nodes -->
 	<x:template match="text()" />	
+	<x:template match="text()" mode="html" />	
 	<x:template match="text()" mode="dataTable" />	
 
 </x:stylesheet>
