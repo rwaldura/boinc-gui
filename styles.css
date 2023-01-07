@@ -8,30 +8,54 @@ body {
 }
 
 #top_left {
-/*	background-color: yellow;*/
+/*	background-color: pink;*/
 	width: 600px; 
+	padding-top: 5px;
+	margin-top: 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #e8e8e8;
 }
 
 #top_right {
-/*	background-color: red;*/
+/*	background-color: pink;*/
     position: absolute;	
-	top: 5px;
-	right: 5px;
+	top: 8px;
+	left: 615px;
 }
 
 #bot_left {
-	background-color: pink;
+/*	background-color: pink;*/
 	width: 600px; 
+	padding-top: 5px;
+	margin-top: 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #e8e8e8;
+}
+
+.vertical_chart_title {
+/*	background-color: pink;*/
+	font-size: 120%;	
+	font-weight: bold;
+/*	display: inline-block;*/
+	text-align: center;
+	width: 260px;
+	padding-top: 5px;
+	
+	transform: rotate(-90deg) translateX(-10px);
+	transform-origin: top left;
 }
 
 .chart_title {
-	font-size: 14pt;	
-	text-align: center;
+/*	background-color: pink;*/
+	font-size: 120%;	
 	font-weight: bold;
+	text-align: center;
 }
 
 #pie_chart_div {
-	height: 260px;
+	height: 260px;	
 }
 
 #time_chart_div {
@@ -42,15 +66,16 @@ body {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #e8e8e8;
+	font-size: 80%;		
 }
 
 .note {
-	font-size: 80%;
+	font-size: 60%;
 	text-align: right;
 }
 
 /* magic to color alternating rows */
-#boinc_cluster_state tr:nth-child(odd) { background: #e8e8e8 }
+#boinc_cluster_state tr:nth-child(odd) { background: #f3f3f3 }
 
 #boinc_cluster_state th {
 	background-color: gray;
@@ -59,7 +84,8 @@ body {
 }
 
 #boinc_cluster_state td {
-	padding: 3px;
+	padding-left: 3px;
+	padding-right: 3px;
 	text-align: center;
 }
 

@@ -52,15 +52,15 @@
 			</head>
 			<body>
 				<div id="top_left">
-					<div class="chart_title">Instant Cluster Utilization</div>
 					<div id="pie_chart_div"/> <!-- pie chart -->
+					<div class="vertical_chart_title">Instant Cluster Utilization</div>
 				</div>
 				<div id="top_right">
 					<x:apply-templates mode="html" />
 				</div>
 				<div id="bot_left">
 					<div class="chart_title">Cluster Utilization</div>
-					<div id="time_chart_div"/> <!-- time chart -->
+					<div id="time_chart_div">other chart here</div> <!-- time chart -->
 				</div>
 			</body>
 		</html>
