@@ -84,11 +84,11 @@
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
 		dt.addRow( [
-			'<x:value-of select="name" />',							// result
-			'<x:value-of select="$app/user_friendly_name" />',		// app
-			'<x:value-of select="$project/project_name" />',		// project
-			'<x:value-of select="$host/domain_name" />',			// host
-			<x:value-of select="round(($host/p_fpops + $host/p_iops) div 1000000)" /> 	// ops
+			/* result */ '<x:value-of select="name" />',
+			/* app */ '<x:value-of select="$app/user_friendly_name" /> - <x:value-of select="$project/project_name" />',
+			/* project */ '<x:value-of select="$project/project_name" />',
+			/* host */ '<x:value-of select="$host/domain_name" />',
+			/* ops */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div 1000000)" />
 			] );			
 	</x:template>	
 
