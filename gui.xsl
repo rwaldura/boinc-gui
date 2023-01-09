@@ -26,11 +26,11 @@
 			        google.charts.setOnLoadCallback( function () 
 					{
 	  					var dt = new google.visualization.DataTable();
-	  					dt.addColumn('string', 'result');
-	  					dt.addColumn('string', 'app');
-	  					dt.addColumn('string', 'project');
-	  					dt.addColumn('string', 'host');
-	  					dt.addColumn('number', 'ops');
+	  					/* 0 */ dt.addColumn('string', 'result');
+	  					/* 1 */ dt.addColumn('string', 'app');
+	  					/* 2 */ dt.addColumn('string', 'project');
+	  					/* 3 */ dt.addColumn('string', 'host');
+	  					/* 4 */ dt.addColumn('number', 'ops');
 		
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
@@ -45,7 +45,7 @@
 						chart.draw(
 							grouped, 
 							{	// chart options
-								fontName: "Google Sans", // matches styles.css
+								fontName: "Arial", // matches styles.css
 							} );
 					} );					
 				</script>
@@ -60,7 +60,9 @@
 				</div>
 				<div id="bot_left">
 					<div class="chart_title">Cluster Utilization</div>
-					<div id="time_chart_div">other chart here</div> <!-- time chart -->
+					<div id="time_chart_div">
+						<p><i>other chart here</i></p>
+					</div> 
 				</div>
 			</body>
 		</html>
@@ -69,12 +71,6 @@
 	<!-- ************************************************************************
 		Create data table. 
 	-->	
-	<x:template match="boinc_cluster_state" mode="dataTable">
-		<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result" mode="dataTable">
-			<x:sort select="name" /> <!-- to group the same apps together -->
-		</x:apply-templates>
-	</x:template>	
-	
 	<!-- results with active tasks -->
 	<x:template match="result[active_task]" mode="dataTable">
 		<!-- get related structs -->
@@ -84,11 +80,11 @@
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
 		dt.addRow( [
-			/* result */ '<x:value-of select="name" />',
-			/* app */ '<x:value-of select="$app/user_friendly_name" /> - <x:value-of select="$project/project_name" />',
-			/* project */ '<x:value-of select="$project/project_name" />',
-			/* host */ '<x:value-of select="$host/domain_name" />',
-			/* ops */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div 1000000)" />
+			/* 0: result  */ '<x:value-of select="name" />',
+			/* 1: app     */ '<x:value-of select="$app/user_friendly_name" /> - <x:value-of select="$project/project_name" />',
+			/* 2: project */ '<x:value-of select="$project/project_name" />',
+			/* 3: host    */ '<x:value-of select="$host/domain_name" />',
+			/* 4: ops     */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div (100 * 1000 * 1000))" />
 			] );			
 	</x:template>	
 
