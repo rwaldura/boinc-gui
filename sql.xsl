@@ -12,8 +12,8 @@
 		os_name STRING,
 		os_version STRING,
 		product_name STRING,
-		p_fpops INTEGER,
-		p_iops INTEGER
+		p_mfpops INTEGER,
+		p_miops INTEGER
 	);
 
 	CREATE TABLE result (
@@ -23,8 +23,8 @@
 		wu_name STRING,
 		app_name STRING,
 		app_user_friendly_name STRING,
-		app_version_num INTEGER,
-		app_version_flops DOUBLE,
+		app_version_num INTEGER
+		app_version_mflops INTEGER,
 		project_name STRING,
 		project_master_url STRING,
 		active_task_fraction_done DOUBLE,
@@ -64,8 +64,8 @@
 			os_name,
 			os_version,
 			product_name,
-			p_fpops,
-			p_iops
+			p_mfpops,
+			p_miops
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="host_cpid" />' ,
@@ -98,7 +98,7 @@
 			app_name,
 			app_user_friendly_name,
 			app_version_num,
-			app_version_flops,
+			app_version_mflops,
 			project_name,
 			project_master_url,
 			active_task_fraction_done
@@ -110,7 +110,7 @@
 			'<x:value-of select="$app/name" />' ,
 			'<x:value-of select="$app/user_friendly_name" />' ,
 			<x:value-of select="$app_version/version_num" /> ,
-			<x:value-of select="$app_version/flops" /> ,
+			<x:value-of select="round($app_version/flops div 1000000)" /> ,
 			'<x:value-of select="$project/project_name" />' ,
 			'<x:value-of select="$project/master_url" />' ,
 			<x:value-of select="active_task/fraction_done" />
