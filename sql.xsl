@@ -4,6 +4,7 @@
 
 	CREATE TABLE host (
 		host_cpid STRING PRIMARY KEY,
+		updated	DATETIME,
 		domain_name STRING,
 		p_ncpus INTEGER,
 		p_vendor STRING,
@@ -17,8 +18,9 @@
 
 	CREATE TABLE result (
 		result_name STRING PRIMARY KEY,
-		wu_name STRING,
 		host_cpid STRING NOT NULL,
+		updated	DATETIME,
+		wu_name STRING,
 		app_name STRING,
 		app_user_friendly_name STRING,
 		app_version_num INTEGER,
@@ -47,6 +49,7 @@
 	<!-- host_info -->
 	<x:template match="host_info">
 		INSERT OR REPLACE INTO host (
+			updated,
 			host_cpid,
 			domain_name,
 			p_ncpus,
@@ -58,6 +61,7 @@
 			p_fpops,
 			p_iops
 		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="host_cpid" />' ,
 			'<x:value-of select="domain_name" />' ,
 			<x:value-of select="p_ncpus" /> ,
@@ -81,6 +85,7 @@
 		<x:variable name="host"        select="../host_info" />
 
 		INSERT OR REPLACE INTO result (
+			updated,
 			result_name,
 			wu_name,
 			host_cpid,
@@ -92,6 +97,7 @@
 			project_master_url,
 			active_task_fraction_done
 		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="name" />' ,
 			'<x:value-of select="wu_name" />' ,
 			'<x:value-of select="$host/host_cpid" />' ,
