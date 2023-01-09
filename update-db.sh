@@ -5,7 +5,7 @@ temp=/tmp/boinc-gui-$$.xml
 cd ~/boinc-gui
 
 ./boinc_cluster_state.xml > $temp && 
-	echo "got cluster state"
+	echo "dumped cluster state"
 
 # update SQL database
 xsltproc sql.xsl $temp | 
