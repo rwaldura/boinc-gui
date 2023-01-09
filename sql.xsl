@@ -31,6 +31,12 @@
 		FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 	);
 
+	Example query:
+
+	SELECT result_name, domain_name, strftime('%Y-%m-%d %H:%M', r.updated, 'localtime') 
+	FROM result r JOIN host h USING (host_cpid) 
+	ORDER BY domain_name;
+
 	See also
 	https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
   -->
@@ -75,7 +81,7 @@
 		);
 	</x:template>	
 
-	<!-- results with active task -->
+	<!-- results in processing: have active task -->
 	<x:template match="result[active_task]">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
