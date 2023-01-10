@@ -4,8 +4,9 @@
 
 	CREATE TABLE host (
 		host_cpid STRING PRIMARY KEY,
-		updated	DATETIME,
+		updated DATETIME,
 		domain_name STRING,
+		hostname STRING,
 		p_ncpus INTEGER,
 		p_vendor STRING,
 		p_model STRING,
@@ -19,11 +20,11 @@
 	CREATE TABLE result (
 		result_name STRING PRIMARY KEY,
 		host_cpid STRING NOT NULL,
-		updated	DATETIME,
+		updated DATETIME,
 		wu_name STRING,
 		app_name STRING,
 		app_user_friendly_name STRING,
-		app_version_num INTEGER
+		app_version_num INTEGER,
 		app_version_mflops INTEGER,
 		project_name STRING,
 		project_master_url STRING,
@@ -57,7 +58,8 @@
 		INSERT OR REPLACE INTO host (
 			updated,
 			host_cpid,
-			domain_name,
+			domain_name, -- the name self-reported by the BOINC client
+			hostname, -- how we actually reached the client, could be an IP address
 			p_ncpus,
 			p_vendor,
 			p_model,
@@ -70,6 +72,7 @@
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="host_cpid" />' ,
 			'<x:value-of select="domain_name" />' ,
+			'<x:value-of select="../../../@hostname" />', <!-- attribute of "boinc_client" element -->		
 			<x:value-of select="p_ncpus" /> ,
 			'<x:value-of select="p_vendor" />' ,
 			'<x:value-of select="p_model" />' ,
