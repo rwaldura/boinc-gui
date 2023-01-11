@@ -1,4 +1,5 @@
 #!/bin/sh
 
-../boinc_cluster_state.xml > _boinc_cluster_state.xml
+cd ..
+./boinc_cluster_state.xml > t/_boinc_cluster_state.xml
 exit $?
