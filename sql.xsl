@@ -1,45 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 	Populate (update) database with latest cluster state.
-
-	CREATE TABLE host (
-		host_cpid STRING PRIMARY KEY,
-		updated DATETIME,
-		domain_name STRING,
-		hostname STRING,
-		p_ncpus INTEGER,
-		p_vendor STRING,
-		p_model STRING,
-		os_name STRING,
-		os_version STRING,
-		product_name STRING,
-		p_mfpops INTEGER,
-		p_miops INTEGER
-	);
-
-	CREATE TABLE result (
-		result_name STRING PRIMARY KEY,
-		host_cpid STRING NOT NULL,
-		updated DATETIME,
-		wu_name STRING,
-		app_name STRING,
-		app_user_friendly_name STRING,
-		app_version_num INTEGER,
-		app_version_mflops INTEGER,
-		project_name STRING,
-		project_master_url STRING,
-		active_task_fraction_done DOUBLE,
-		FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
-	);
-
-	Example query:
-
-	SELECT result_name, domain_name, strftime('%Y-%m-%d %H:%M', r.updated, 'localtime') 
-	FROM result r JOIN host h USING (host_cpid) 
-	ORDER BY domain_name;
-
-	See also
-	https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
+	See schema.sql for defintions.
   -->
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
@@ -58,8 +20,8 @@
 		INSERT OR REPLACE INTO host (
 			updated,
 			host_cpid,
-			domain_name, -- the name self-reported by the BOINC client
-			hostname, -- how we actually reached the client, could be an IP address
+			domain_name, 
+			hostname,
 			p_ncpus,
 			p_vendor,
 			p_model,
