@@ -28,6 +28,7 @@ CREATE TABLE result (
 	host_cpid STRING NOT NULL,
 	updated DATETIME,
 	wu_name STRING,
+	wu_rsc_mfpops_est INTEGER,	-- megaflops
 	app_name STRING,
 	app_user_friendly_name STRING,
 	app_version_num INTEGER,

@@ -16,9 +16,11 @@ test "$num_results" -gt "$num_hosts" || exit 1
 sqlite3 _test.db "
 SELECT 
 	strftime('%Y-%m-%d %H:%M', r.updated, 'localtime') as updated, 
-	round(100 * active_task_fraction_done) as frac_done, 
-	app_name, 
-	domain_name
+	round(100 * active_task_fraction_done) as '%done', 
+	app_name || '-' || app_version_num AS BOINC_App,
+	app_version_mflops AS app_mops,
+	domain_name,
+	p_mfpops + p_miops AS host_mops
 FROM 
 	result r JOIN host h USING (host_cpid) 
 ORDER BY 
