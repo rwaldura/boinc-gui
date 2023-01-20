@@ -128,7 +128,7 @@
 		Create data table. 
 	-->	
 	<!-- results with active tasks -->
-	<x:template match="result[active_task]" mode="dataTable">
+	<x:template match="result[active_task/active_task_state = 1]" mode="dataTable">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
@@ -165,8 +165,8 @@
 		</div>		
 	</x:template>
 
-	<!-- results with active tasks -->
-	<x:template match="result[active_task]" mode="html">
+	<!-- results with tasks actively executing -->
+	<x:template match="result[active_task/active_task_state = 1]" mode="html">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />

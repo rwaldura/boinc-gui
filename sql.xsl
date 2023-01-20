@@ -46,8 +46,8 @@
 		);
 	</x:template>	
 
-	<!-- results in processing: have active task -->
-	<x:template match="result[active_task]">
+	<!-- results in processing: have task actively executing -->
+	<x:template match="result[active_task/active_task_state = 1]">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
