@@ -1,0 +1,71 @@
+#!/bin/sh
+
+#readonly DATABASE=boinc_cluster_state.db
+readonly DATABASE=t/_test.db # for testing
+
+readonly NULL_ROW='{ "c": [] }'
+
+readonly COLUMN_DEFS='
+	{
+		"id": "updated",
+		"label": "Updated",
+		"type": "datetime"
+	},
+	{
+		"id": "active_task_fraction_done",
+		"label": "%done",
+		"type": "number"
+	},
+	{
+		"id": "domain_name",
+		"label": "Node",
+		"type": "string"
+	},
+	{
+		"id": "app_name",
+		"label": "BOINC App",
+		"type": "string"
+	},
+	{
+		"id": "project_name",
+		"label": "BOINC Project",
+		"type": "string"
+	},
+	{
+		"id": "mops",
+		"label": "Node Power (megaops)",
+		"type": "number"
+	}'
+
+readonly SELECT_JSON="
+	SELECT 
+		json_object('c', 
+			json_array( 
+				json_object('v', strftime('Date(%Y, %m, %d, %H, %M, 0, 0)', r.updated, 'localtime')), -- off by one, unfortunately
+				json_object('v', active_task_fraction_done), 
+				json_object('v', domain_name),
+				json_object('v', app_user_friendly_name),
+				json_object('v', project_name),
+				json_object('v', p_mfpops + p_miops)
+				))
+	FROM 
+		result r JOIN host h USING (host_cpid)
+	LIMIT 3"
+
+##############################################################################
+# main
+
+rows=$( sqlite3 -list -noheader -newline "," "$DATABASE" "$SELECT_JSON" )
+
+# output entire document
+cat <<_JSON_ 
+{
+	"cols": [ $COLUMN_DEFS ],
+	"rows": [ $rows $NULL_ROW ]
+}
+_JSON_
+
+exit 0
+
+
+

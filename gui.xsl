@@ -21,11 +21,65 @@
 				<link rel="stylesheet" href="styles.css" />
 				<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js" />
 				<script type="text/javascript">
+					/*************************************************************************
+					 *
+					 */
+					function newDataTableRequest(processJSON)
+					{
+						const xhr = new XMLHttpRequest();
+						xhr.responseType = "json";
+	
+						xhr.onerror = function(e) { showError("Error loading chart data: " + e) };
+
+						xhr.onload = function() {
+							console.log("XHR: load status=" + xhr.status + " resp=" + xhr.response);
+		
+							if (xhr.status == 200 // HTTP OK
+								&amp;&amp; xhr.response) { // JSON parsed successfully
+								console.log("XHR: chart data loaded, calling JSON handler");
+								processJSON(xhr.response);
+							} else {
+								showError("XHR: probable JSON parsing error loading chart data: status=" + xhr.status + " resp=" + xhr.response);
+							}
+						};
+
+						return xhr;
+					}
+					
+					/*************************************************************************
+					 *
+					 */
+					function updateChart(json)
+					{
+						try {
+							const dt = new google.visualization.DataTable(json);
+							
+							const chart1 = new google.visualization.AreaChart( document.getElementById('time_chart_div') );
+							chart1.draw(dt, opts);
+						} catch (e) {
+							showError("Drawing charts: " + e);
+						}	
+					}
+					
+					/*************************************************************************
+					 *
+					 */
+					function loadTimeChartData(url = "get-data-table.cgi")
+					{
+						const request = newDataTableRequest(updateChart /* func called once request completes */);
+						request.open("GET", url, true /* async */);
+						request.send();
+						console.log("requested " + url);
+						// the XHR onload handler is called next
+					}
+					
+					/*************************************************************************
+					 * main
+					 */
 			        google.charts.load('current', { 'packages': [ 'corechart', 'table' ] });
 
-			        google.charts.setOnLoadCallback( function () 
-					{
-	  					var dt = new google.visualization.DataTable();
+			        google.charts.setOnLoadCallback( function () {
+	  					const dt = new google.visualization.DataTable();
 	  					/* 0 */ dt.addColumn('string', 'result');
 	  					/* 1 */ dt.addColumn('string', 'app');
 	  					/* 2 */ dt.addColumn('string', 'project');
@@ -36,17 +90,19 @@
 	  					<x:apply-templates mode="dataTable" />
 
 						// SELECT app, SUM(ops) FROM dt GROUP BY app
-						var grouped = google.visualization.data.group(
+						const grouped = google.visualization.data.group(
 							dt,
 							[ 1 ], // "app" column
 							[ { 'column': 4, 'aggregation': google.visualization.data.sum, 'type': 'number' } ] );
 						
-						var chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
+						const chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
 						chart.draw(
 							grouped, 
 							{	// chart options
 								fontName: "Arial", // matches styles.css
 							} );
+							
+						loadTimeChartData();
 					} );					
 				</script>
 			</head>
