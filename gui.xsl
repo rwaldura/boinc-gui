@@ -89,11 +89,11 @@
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
 
-						// SELECT app, SUM(ops) FROM dt GROUP BY app
+						// SELECT app, COUNT(*) FROM dt GROUP BY app
 						const grouped = google.visualization.data.group(
 							dt,
 							[ 1 ], // "app" column
-							[ { 'column': 4, 'aggregation': google.visualization.data.sum, 'type': 'number' } ] );
+							[ { 'column': 0, 'aggregation': google.visualization.data.count, 'type': 'number' } ] );
 						
 						const chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
 						chart.draw(
@@ -127,7 +127,7 @@
 	<!-- ************************************************************************
 		Create data table. 
 	-->	
-	<!-- results with active tasks -->
+	<!-- results with active tasks in processing state -->
 	<x:template match="result[active_task/active_task_state = 1]" mode="dataTable">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
