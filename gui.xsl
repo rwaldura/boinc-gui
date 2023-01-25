@@ -89,12 +89,15 @@
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
 
-						// SELECT app, COUNT(*) FROM dt GROUP BY app
+						// SELECT app, COUNT(*) AS n FROM dt GROUP BY app
+						// see https://developers.google.com/chart/interactive/docs/reference#google_visualization_data_group
 						const grouped = google.visualization.data.group(
 							dt,
 							[ 1 ], // "app" column
 							[ { 'column': 0, 'aggregation': google.visualization.data.count, 'type': 'number' } ] );
-						
+						// ORDER BY n DESC
+						grouped.sort( { column: 1, desc: true } );
+
 						const chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
 						chart.draw(
 							grouped, 
