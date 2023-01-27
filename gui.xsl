@@ -10,7 +10,6 @@
   -->
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:set="http://exslt.org/sets"
 	version="1.0">
 
 	<x:output method="html" encoding="UTF-8" />
@@ -82,9 +81,10 @@
 	  					const dt = new google.visualization.DataTable();
 	  					/* 0 */ dt.addColumn('string', 'result');
 	  					/* 1 */ dt.addColumn('string', 'app');
-	  					/* 2 */ dt.addColumn('string', 'project');
-	  					/* 3 */ dt.addColumn('string', 'host');
-	  					/* 4 */ dt.addColumn('number', 'ops');
+	  					/* 2 */ dt.addColumn('string', 'app_long');
+	  					/* 3 */ dt.addColumn('string', 'project');
+	  					/* 4 */ dt.addColumn('string', 'host');
+	  					/* 5 */ dt.addColumn('number', 'ops');
 		
 						// populate the dataTable
 	  					<x:apply-templates mode="dataTable" />
@@ -93,16 +93,21 @@
 						// https://developers.google.com/chart/interactive/docs/reference#google_visualization_data_group
 						const grouped = google.visualization.data.group(
 							dt,
-							[ 1 ], // group by "app" column
+							[ 1, 2 ], // group by "app" and "app_long" columns
 							[ { column: 0, aggregation: google.visualization.data.count, type: 'number' } ] );
 						// ORDER BY app
 						grouped.sort(0);
+						
+						// hide column 0: app short name; it was only used for sorting purposes
+						const dv = new google.visualization.DataView(grouped);
+						dv.hideColumns([0]);
 
 						const chart = new google.visualization.PieChart( document.getElementById('pie_chart_div') );
 						chart.draw(
-							grouped, 
+							dv, 
 							{	// chart options
 								fontName: "Arial", // matches styles.css
+								piehole: 0.4,
 							} );
 							
 						loadTimeChartData();
@@ -139,11 +144,12 @@
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
 		dt.addRow( [
-			/* 0: result  */ '<x:value-of select="name" />',
-			/* 1: app     */ '<x:value-of select="$app/user_friendly_name" /> - <x:value-of select="$project/project_name" />',
-			/* 2: project */ '<x:value-of select="$project/project_name" />',
-			/* 3: host    */ '<x:value-of select="$host/domain_name" />',
-			/* 4: ops     */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div (100 * 1000 * 1000))" />
+			/* 0: result      */ '<x:value-of select="name" />',
+			/* 1: app (short) */ '<x:value-of select="$app/name" />',
+			/* 2: app (long)  */ '<x:value-of select="$app/user_friendly_name" /> (<x:value-of select="$project/project_name" />)',
+			/* 3: project     */ '<x:value-of select="$project/project_name" />',
+			/* 4: host        */ '<x:value-of select="$host/domain_name" />',
+			/* 5: ops         */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div (100 * 1000 * 1000))" />
 			] );			
 	</x:template>	
 
@@ -159,7 +165,7 @@
 				<th/>
 			</tr>
 			<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result" mode="html">
-				<x:sort select="name" /> <!-- to group the same apps together -->
+				<x:sort select="../workunit[name = current()/wu_name]/app_name" /> <!-- ordered by app name -->
 				<x:sort select="../host_info/domain_name" />
 			</x:apply-templates>
 		</table>
