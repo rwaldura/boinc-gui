@@ -107,7 +107,7 @@
 							dv, 
 							{	// chart options
 								fontName: "Arial", // matches styles.css
-								piehole: 0.4,
+								pieHole: 0.4,
 							} );
 							
 						loadTimeChartData();

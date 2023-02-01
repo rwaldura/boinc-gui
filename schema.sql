@@ -40,7 +40,7 @@ CREATE TABLE result (
 DROP VIEW IF EXISTS cluster_state;
 CREATE VIEW cluster_state AS
 	SELECT 
-		strftime('%Y-%m-%d %H:%M', r.updated, 'localtime') AS updated,
+		datetime(r.updated, 'localtime') AS updated,
 		round(100 * active_task_fraction_done) AS frac_done,
 		app_name || '-' || app_version_num AS app,
 		app_version_mflops AS app_mops,
@@ -56,4 +56,4 @@ CREATE VIEW cluster_state AS
 DROP VIEW IF EXISTS instant_cluster_state;
 CREATE VIEW instant_cluster_state AS
 	SELECT * FROM cluster_state 
-	WHERE updated = strftime('%Y-%m-%d %H:%M', (SELECT max(updated) FROM result), 'localtime');
+	WHERE updated = datetime((SELECT max(updated) FROM result), 'localtime');

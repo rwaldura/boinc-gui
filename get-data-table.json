@@ -50,7 +50,8 @@ readonly SELECT_JSON="
 				))
 	FROM 
 		result r JOIN host h USING (host_cpid)
-	LIMIT 3"
+	WHERE 
+		datetime(r.updated) > datetime('now', '-7 day') -- 7 days prior"
 
 ##############################################################################
 # main
