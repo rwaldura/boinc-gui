@@ -36,6 +36,24 @@ CREATE TABLE result (
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
 
+-- store computational state
+CREATE TABLE result1 (
+	result_name STRING NOT NULL,
+	host_cpid STRING NOT NULL,
+	created DATETIME,
+	wu_name STRING,
+	wu_rsc_mfpops_est INTEGER,	-- megaflops
+	app_name STRING,
+	app_user_friendly_name STRING,
+	app_version_num INTEGER,
+	app_version_mflops INTEGER,	-- megaflops
+	project_name STRING,
+	project_master_url STRING,
+	active_task_fraction_done DOUBLE,
+	
+	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
+);
+
 -- natural join between both tables above
 DROP VIEW IF EXISTS cluster_state;
 CREATE VIEW cluster_state AS

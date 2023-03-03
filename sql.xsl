@@ -82,6 +82,34 @@
 			'<x:value-of select="$project/master_url" />' ,
 			<x:value-of select="active_task/fraction_done" />
 		);
+		
+		INSERT INTO result1 (
+			created,
+			result_name,
+			wu_name,
+			wu_rsc_mfpops_est,
+			host_cpid,
+			app_name,
+			app_user_friendly_name,
+			app_version_num,
+			app_version_mflops,
+			project_name,
+			project_master_url,
+			active_task_fraction_done
+		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="name" />' ,
+			'<x:value-of select="wu_name" />' ,
+			<x:value-of select="round($workunit/rsc_fpops_est div 1000000)" />,
+			'<x:value-of select="$host/host_cpid" />' ,
+			'<x:value-of select="$app/name" />' ,
+			'<x:value-of select="$app/user_friendly_name" />' ,
+			<x:value-of select="$app_version/version_num" /> ,
+			<x:value-of select="round($app_version/flops div 1000000)" /> ,
+			'<x:value-of select="$project/project_name" />' ,
+			'<x:value-of select="$project/master_url" />' ,
+			<x:value-of select="active_task/fraction_done" />
+		);
 	</x:template>	
 
 	<!-- ignore stray text in all nodes -->
