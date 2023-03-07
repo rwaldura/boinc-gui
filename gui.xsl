@@ -98,7 +98,7 @@
 						// ORDER BY app
 						grouped.sort(0);
 						
-						// hide column 0: app short name; it was only used for sorting purposes
+						// hide column 0: app short name; it was only used for ordering purposes
 						const dv = new google.visualization.DataView(grouped);
 						dv.hideColumns([0]);
 

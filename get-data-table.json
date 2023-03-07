@@ -1,49 +1,73 @@
 #!/bin/sh
+##############################################################################
+#
+# Output 
+#
+##############################################################################
 
-#readonly DATABASE=boinc_cluster_state.db
+readonly DATABASE=boinc_cluster_state.db
 #readonly DATABASE=t/_test.db # for testing
-readonly DATABASE=prod.db
+#readonly DATABASE=prod.db
 
 readonly NULL_ROW='{ "c": [] }'
 
 readonly COLUMN_DEFS='
 	{
-		"id": "updated",
-		"label": "Updated",
+		"id": "created",
+		"label": "Day",
 		"type": "datetime"
 	},
 	{
 		"id": "app_name",
+		"type": "string"
+	},
+	{
+		"id": "app_user_friendly_name",
 		"label": "BOINC App",
 		"type": "string"
 	},
 	{
-		"id": "count",
-		"label": "Tasks Completed",
+		"id": "project_name",
+		"label": "Project",
+		"type": "string"
+	},
+	{
+		"id": "app_project_name",
+		"label": "BOINC App (BOINC Project)",
+		"type": "string"
+	},
+	{
+		"id": "active_tasks",
+		"label": "Tasks Running",
 		"type": "number"
 	}'
 
-readonly SELECT_GROUP="
-	SELECT 
-		date(updated, 'localtime') AS updated, 
-		app_user_friendly_name, 
-		COUNT(*) AS n
-	FROM 
-		result
-	WHERE 
-		datetime(updated) > datetime('now', '-30 day')
-	GROUP BY
-		1, 2"
+readonly SELECT_GROUPED="
+    SELECT 
+        date(created, 'localtime') AS day,
+        app_name,
+        app_user_friendly_name, 
+		project_name,
+		app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
+        COUNT(DISTINCT result_name) AS active_tasks
+    FROM 
+        result1
+    WHERE 
+        datetime(created) >= datetime('now', '-7 day')
+    GROUP BY 1, 2, 3, 4, 5"
 
 readonly SELECT_JSON="
-	SELECT 
-		json_object('c', 
-			json_array( 
-				json_object('v', strftime('Date(%Y, %m, %d, 0, 0, 0, 0)', updated)), 
-				json_object('v', app_user_friendly_name),
-				json_object('v', n)
-				))
-	FROM ( $SELECT_GROUP )"
+    SELECT 
+        json_object('c', 
+            json_array( 
+                json_object('v', strftime('Date(%Y, %m, %d, 0, 0, 0, 0)', day)), 
+                json_object('v', app_name),
+                json_object('v', app_user_friendly_name),
+                json_object('v', project_name),
+                json_object('v', app_project_name),
+                json_object('v', active_tasks)
+                ))
+    FROM ( $SELECT_GROUPED )"
 
 ##############################################################################
 # main
