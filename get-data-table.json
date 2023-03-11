@@ -1,7 +1,8 @@
 #!/bin/sh
 ##############################################################################
 #
-# Output 
+# Output a datatable in JSON. 
+# https://developers.google.com/chart/interactive/docs/reference#DataTable_toJSON
 #
 ##############################################################################
 
@@ -33,7 +34,7 @@ readonly COLUMN_DEFS='
 	},
 	{
 		"id": "app_project_name",
-		"label": "BOINC App (BOINC Project)",
+		"label": "App (Project)",
 		"type": "string"
 	},
 	{
@@ -42,13 +43,54 @@ readonly COLUMN_DEFS='
 		"type": "number"
 	}'
 
-readonly SELECT_GROUPED="
+readonly SQL_SELECT_PIVOT_APPS="
+    -- SELECT load_extension('pivot_vtab');
+	DROP TABLE IF EXISTS apps_pivot;
+    CREATE VIRTUAL TABLE apps_pivot USING pivot_vtab (
+        -- rows
+        ( SELECT DISTINCT date(created, 'localtime') AS day from result1 ),
+        -- columns
+        ( SELECT DISTINCT app_name, app_user_friendly_name || ' (' || project_name || ')' FROM result1 ORDER BY 1 ),
+        -- cell values
+        ( SELECT COUNT(DISTINCT result_name) AS active_tasks 
+          FROM result1 WHERE ?1 = date(created, 'localtime') AND ?2 = app_name )
+    );
+	SELECT * FROM apps_pivot"
+# Issues with this: it's super slow, as it runs a query for each cell.
+# It really needs an index to run reasonably fast. Unfortunately the index I want is not supported:
+# create index i1 result1(date(created, 'localtime'));
+# See https://www.sqlite.org/deterministic.html
+# What I can have is:
+# create index i1 result1(date(created));
+# but this means my days are slightly off: they are aligned to UTC time, not local.
+# Also, annoying but acceptable: the table needs to be re-created everytime, to
+# take into account new apps.
+# See also https://github.com/jakethaw/pivot_vtab/issues/7
+
+readonly SQL_SELECT_PIVOT_PROJECT="
+    SELECT 
+        date(created, 'localtime') AS day,
+        COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result_name END) AS 'yoyo@home',
+        COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result_name END) AS 'World Community Grid',
+        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result_name END) AS 'Asteroids@home'
+    FROM 
+        result1
+    WHERE 
+        datetime(created) >= datetime('now', '-7 day')
+    GROUP BY 1"
+# Comments: 
+# it's static: cannot adapt to new apps, so:
+# it groups by project, not app
+# project names are fixed 
+# Pro: it's super fast
+
+readonly SQL_SELECT_GROUPED="
     SELECT 
         date(created, 'localtime') AS day,
         app_name,
         app_user_friendly_name, 
-		project_name,
-		app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
+        project_name,
+        app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
         COUNT(DISTINCT result_name) AS active_tasks
     FROM 
         result1
@@ -56,11 +98,11 @@ readonly SELECT_GROUPED="
         datetime(created) >= datetime('now', '-7 day')
     GROUP BY 1, 2, 3, 4, 5"
 
-readonly SELECT_JSON="
+readonly SQL_SELECT_JSON="
     SELECT 
         json_object('c', 
             json_array( 
-                json_object('v', strftime('Date(%Y, %m, %d, 0, 0, 0, 0)', day)), 
+                json_object('v', strftime('Date(%Y, %m, %d)', day)), -- off by one error: months start at zero
                 json_object('v', app_name),
                 json_object('v', app_user_friendly_name),
                 json_object('v', project_name),
@@ -72,7 +114,7 @@ readonly SELECT_JSON="
 ##############################################################################
 # main
 
-rows=$( sqlite3 -list -noheader -newline "," "$DATABASE" "$SELECT_JSON" )
+rows=$( sqlite3 -list -noheader -newline "," "$DATABASE" "$SQL_SELECT_JSON" )
 
 # output entire document
 cat <<_JSON_ 

@@ -21,7 +21,15 @@
 				<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js" />
 				<script type="text/javascript">
 					/*************************************************************************
-					 *
+					 * Troubleshooting.
+					 */
+					function showError(err)
+					{
+						console.error(err);
+					}
+					
+					/*************************************************************************
+					 * Create a XML HTTP request to retrieve JSON content.
 					 */
 					function newDataTableRequest(processJSON)
 					{
@@ -46,22 +54,32 @@
 					}
 					
 					/*************************************************************************
-					 *
+					 * Called once the XML HTTP request completes. 
 					 */
 					function updateChart(json)
 					{
 						try {
 							const dt = new google.visualization.DataTable(json);
+							dt.sort([0, 1]); // order by day, then app short name
+													
+							const dv = new google.visualization.DataView(dt);
+							dv.hideColumns([1, 2, 3]); // don't need those							
 							
-							const chart1 = new google.visualization.AreaChart( document.getElementById('time_chart_div') );
-							chart1.draw(dt, opts);
+							const chart1 = new google.visualization.Table( document.getElementById('time_chart_div') );
+							<!-- const chart1 = new google.visualization.ColumnChart( document.getElementById('time_chart_div') ); -->
+							chart1.draw(
+								dv, 
+								{	// chart options
+									fontName: "Arial", // matches styles.css
+							        isStacked: true,
+								} );
 						} catch (e) {
 							showError("Drawing charts: " + e);
 						}	
 					}
 					
 					/*************************************************************************
-					 *
+					 * Retrieve JSON data for this time-based chart, then draw it.
 					 */
 					function loadTimeChartData(url = "get-data-table.cgi")
 					{
@@ -69,7 +87,7 @@
 						request.open("GET", url, true /* async */);
 						request.send();
 						console.log("requested " + url);
-						// the XHR onload handler is called next
+						// updateChart is called next
 					}
 					
 					/*************************************************************************
@@ -86,7 +104,7 @@
 	  					/* 4 */ dt.addColumn('string', 'host');
 	  					/* 5 */ dt.addColumn('number', 'ops');
 		
-						// populate the dataTable
+						// populate the dt datatable
 	  					<x:apply-templates mode="dataTable" />
 
 						// SELECT app, COUNT(*) AS n FROM dt GROUP BY app
@@ -110,7 +128,7 @@
 								pieHole: 0.4,
 							} );
 							
-						loadTimeChartData();
+						loadTimeChartData("_data-table.json");
 					} );					
 				</script>
 			</head>

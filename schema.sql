@@ -36,6 +36,8 @@ CREATE TABLE result (
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
 
+CREATE INDEX result_updated ON result(updated);
+
 -- store computational state
 CREATE TABLE result1 (
 	result_name STRING NOT NULL,
@@ -53,6 +55,10 @@ CREATE TABLE result1 (
 	
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
+
+CREATE INDEX result1_created ON result1(created);
+CREATE INDEX result1_created_date ON result1(date(created));
+CREATE INDEX result1_created_datetime ON result1(datetime(created));
 
 -- natural join between both tables above
 DROP VIEW IF EXISTS cluster_state;
@@ -75,3 +81,10 @@ DROP VIEW IF EXISTS instant_cluster_state;
 CREATE VIEW instant_cluster_state AS
 	SELECT * FROM cluster_state 
 	WHERE updated = datetime((SELECT max(updated) FROM result), 'localtime');
+	
+-- simplified view of hosts 
+DROP VIEW IF EXISTS hosts;
+CREATE VIEW hosts AS 
+	select domain_name, hostname, product_name, p_ncpus, p_mfpops
+	from host order by domain_name;
+
