@@ -19,29 +19,80 @@ readonly COLUMN_DEFS='
 		"type": "datetime"
 	},
 	{
-		"id": "app_name",
-		"type": "string"
+		"id": "yoyo",
+		"label": "yoyo@home",
+		"type": "number"
 	},
 	{
-		"id": "app_user_friendly_name",
-		"label": "BOINC App",
-		"type": "string"
+		"id": "wcg",
+		"label": "World Community Grid",
+		"type": "number"
 	},
 	{
-		"id": "project_name",
-		"label": "Project",
-		"type": "string"
-	},
-	{
-		"id": "app_project_name",
-		"label": "App (Project)",
-		"type": "string"
-	},
-	{
-		"id": "active_tasks",
-		"label": "Tasks Running",
+		"id": "aster",
+		"label": "Asteroids@home",
 		"type": "number"
 	}'
+
+readonly SQL_SELECT_PIVOT_PROJECT="
+    SELECT 
+        date(created, 'localtime') AS day,
+        COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result_name END) AS yoyo,
+        COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result_name END) AS wcg,
+        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result_name END) AS aster
+    FROM 
+        result1
+    WHERE 
+        datetime(created) >= datetime('now', '-7 day')
+    GROUP BY 1"
+# Comments: 
+# it's static: cannot adapt to new apps, so:
+# it groups by project, not app
+# project names are fixed 
+# Pro: it's super fast
+
+readonly SQL_SELECT_JSON="
+    SELECT 
+        json_object('c', 
+            json_array( 
+                json_object('v', strftime('Date(%Y, %m, %d)', day)), -- off by one error: months start at zero
+                json_object('v', yoyo),
+                json_object('v', wcg),
+                json_object('v', aster)
+                ))
+    FROM ( $SQL_SELECT_PIVOT_PROJECT )"
+
+##############################################################################
+# main
+
+rows=$( sqlite3 -list -noheader -newline "," "$DATABASE" "$SQL_SELECT_JSON" )
+
+# output entire document
+cat <<_JSON_ 
+{
+	"cols": [ $COLUMN_DEFS ],
+	"rows": [ $rows $NULL_ROW ]
+}
+_JSON_
+
+exit 0
+
+##############################################################################
+# unused
+
+readonly SQL_SELECT_GROUPED="
+    SELECT 
+        date(created, 'localtime') AS day,
+        app_name,
+        app_user_friendly_name, 
+        project_name,
+        app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
+        COUNT(DISTINCT result_name) AS active_tasks
+    FROM 
+        result1
+    WHERE 
+        datetime(created) >= datetime('now', '-7 day')
+    GROUP BY 1, 2, 3, 4, 5"
 
 readonly SQL_SELECT_PIVOT_APPS="
     -- SELECT load_extension('pivot_vtab');
@@ -64,67 +115,9 @@ readonly SQL_SELECT_PIVOT_APPS="
 # create index i1 result1(date(created));
 # but this means my days are slightly off: they are aligned to UTC time, not local.
 # Also, annoying but acceptable: the table needs to be re-created everytime, to
-# take into account new apps.
+# take into account any new apps.
 # See also https://github.com/jakethaw/pivot_vtab/issues/7
 
-readonly SQL_SELECT_PIVOT_PROJECT="
-    SELECT 
-        date(created, 'localtime') AS day,
-        COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result_name END) AS 'yoyo@home',
-        COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result_name END) AS 'World Community Grid',
-        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result_name END) AS 'Asteroids@home'
-    FROM 
-        result1
-    WHERE 
-        datetime(created) >= datetime('now', '-7 day')
-    GROUP BY 1"
-# Comments: 
-# it's static: cannot adapt to new apps, so:
-# it groups by project, not app
-# project names are fixed 
-# Pro: it's super fast
-
-readonly SQL_SELECT_GROUPED="
-    SELECT 
-        date(created, 'localtime') AS day,
-        app_name,
-        app_user_friendly_name, 
-        project_name,
-        app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
-        COUNT(DISTINCT result_name) AS active_tasks
-    FROM 
-        result1
-    WHERE 
-        datetime(created) >= datetime('now', '-7 day')
-    GROUP BY 1, 2, 3, 4, 5"
-
-readonly SQL_SELECT_JSON="
-    SELECT 
-        json_object('c', 
-            json_array( 
-                json_object('v', strftime('Date(%Y, %m, %d)', day)), -- off by one error: months start at zero
-                json_object('v', app_name),
-                json_object('v', app_user_friendly_name),
-                json_object('v', project_name),
-                json_object('v', app_project_name),
-                json_object('v', active_tasks)
-                ))
-    FROM ( $SELECT_GROUPED )"
-
-##############################################################################
-# main
-
-rows=$( sqlite3 -list -noheader -newline "," "$DATABASE" "$SQL_SELECT_JSON" )
-
-# output entire document
-cat <<_JSON_ 
-{
-	"cols": [ $COLUMN_DEFS ],
-	"rows": [ $rows $NULL_ROW ]
-}
-_JSON_
-
-exit 0
 
 
 

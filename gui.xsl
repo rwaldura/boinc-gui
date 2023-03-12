@@ -60,15 +60,12 @@
 					{
 						try {
 							const dt = new google.visualization.DataTable(json);
-							dt.sort([0, 1]); // order by day, then app short name
+							dt.sort(0); // order by day
 													
-							const dv = new google.visualization.DataView(dt);
-							dv.hideColumns([1, 2, 3]); // don't need those							
-							
-							const chart1 = new google.visualization.Table( document.getElementById('time_chart_div') );
-							<!-- const chart1 = new google.visualization.ColumnChart( document.getElementById('time_chart_div') ); -->
+							<!-- const chart1 = new google.visualization.Table( document.getElementById('time_chart_div') ); -->
+							const chart1 = new google.visualization.ColumnChart( document.getElementById('time_chart_div') );
 							chart1.draw(
-								dv, 
+								dt, 
 								{	// chart options
 									fontName: "Arial", // matches styles.css
 							        isStacked: true,
