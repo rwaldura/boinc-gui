@@ -58,12 +58,15 @@
 					 */
 					function updateChart(json)
 					{
+						const time_chart_div = document.getElementById('time_chart_div');
+					
 						try {
 							const dt = new google.visualization.DataTable(json);
 							dt.sort(0); // order by day
 													
-							<!-- const chart1 = new google.visualization.Table( document.getElementById('time_chart_div') ); -->
-							const chart1 = new google.visualization.ColumnChart( document.getElementById('time_chart_div') );
+							<!-- const chart1 = new google.visualization.Table(time_chart_div); -->
+							<!-- const chart1 = new google.visualization.ColumnChart(time_chart_div); -->
+							const chart1 = new google.visualization.AreaChart(time_chart_div);
 							chart1.draw(
 								dt, 
 								{	// chart options

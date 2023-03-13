@@ -45,7 +45,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
     FROM 
         result1
     WHERE 
-        datetime(created) >= datetime('now', '-7 day')
+        datetime(created) >= datetime('now', '-14 day')
     GROUP BY 1,2,3"
 # Comments: 
 # it's static: cannot adapt to new apps, so:
