@@ -24,19 +24,21 @@ readonly COLUMN_DEFS='
 		"type": "number"
 	},
 	{
-		"id": "wcg",
-		"label": "World Community Grid",
+		"id": "aster",
+		"label": "Asteroids@home",
 		"type": "number"
 	},
 	{
-		"id": "aster",
-		"label": "Asteroids@home",
+		"id": "wcg",
+		"label": "World Community Grid",
 		"type": "number"
 	}'
 
 readonly SQL_SELECT_PIVOT_PROJECT="
     SELECT 
-        date(created, 'localtime') AS day,
+        strftime('%Y', created, 'localtime') as created_y,
+        strftime('%m', created, 'localtime') as created_m,
+        strftime('%d', created, 'localtime') as created_d,
         COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result_name END) AS yoyo,
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result_name END) AS wcg,
         COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result_name END) AS aster
@@ -44,7 +46,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         result1
     WHERE 
         datetime(created) >= datetime('now', '-7 day')
-    GROUP BY 1"
+    GROUP BY 1,2,3"
 # Comments: 
 # it's static: cannot adapt to new apps, so:
 # it groups by project, not app
@@ -55,10 +57,11 @@ readonly SQL_SELECT_JSON="
     SELECT 
         json_object('c', 
             json_array( 
-                json_object('v', strftime('Date(%Y, %m, %d)', day)), -- off by one error: months start at zero
+				-- dumbass JSON dates use 0-based months
+                json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
                 json_object('v', yoyo),
-                json_object('v', wcg),
-                json_object('v', aster)
+                json_object('v', aster),
+                json_object('v', wcg)
                 ))
     FROM ( $SQL_SELECT_PIVOT_PROJECT )"
 
