@@ -18,29 +18,19 @@ CREATE TABLE host (
 	p_miops INTEGER		-- megaflops
 );
 
--- store computational state
-CREATE TABLE result (
-	result_name STRING PRIMARY KEY,
-	host_cpid STRING NOT NULL,
-	updated DATETIME,
-	wu_name STRING,
-	wu_rsc_mfpops_est INTEGER,	-- megaflops
-	app_name STRING,
-	app_user_friendly_name STRING,
-	app_version_num INTEGER,
-	app_version_mflops INTEGER,	-- megaflops
-	project_name STRING,
-	project_master_url STRING,
-	active_task_fraction_done DOUBLE,
-	
-	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
+CREATE TABLE task (
+	task_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	fraction_done DOUBLE,
+	active_task_state INTEGER,
+	scheduler_state INTEGER,
+	current_cpu_time DOUBLE,
+	elapsed_time DOUBLE,
+	progress_rate DOUBLE	
 );
 
-CREATE INDEX result_updated ON result(updated);
-
 -- store computational state
-CREATE TABLE result1 (
-	result_name STRING NOT NULL,
+CREATE TABLE result (
+	name STRING NOT NULL,
 	host_cpid STRING NOT NULL,
 	created DATETIME,
 	wu_name STRING,
@@ -51,40 +41,67 @@ CREATE TABLE result1 (
 	app_version_mflops INTEGER,	-- megaflops
 	project_name STRING,
 	project_master_url STRING,
-	active_task_fraction_done DOUBLE,
+	final_cpu_time DOUBLE,
+	final_elapsed_time DOUBLE, 
+	exit_status INTEGER,
+	state INTEGER,
+	report_deadline DOUBLE,
+	received_time DOUBLE,
+	estimated_cpu_time_remaining DOUBLE,
+	task_id INTEGER,
 	
-	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
+	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid),
+	FOREIGN KEY (task_id) REFERENCES task(task_id)
 );
 
-CREATE INDEX result1_created ON result1(created);
-CREATE INDEX result1_created_date ON result1(date(created));
-CREATE INDEX result1_created_datetime ON result1(datetime(created));
+CREATE INDEX result_created ON result(created);
+CREATE INDEX result_created_date ON result(date(created));
+CREATE INDEX result_created_datetime ON result(datetime(created));
 
 -- natural join between both tables above
 DROP VIEW IF EXISTS cluster_state;
 CREATE VIEW cluster_state AS
 	SELECT 
-		datetime(r.updated, 'localtime') AS updated,
-		round(100 * active_task_fraction_done) AS frac_done,
+		datetime(r.created, 'localtime') AS created,
+		round(100 * t.fraction_done) AS '%done',
 		app_name || '-' || app_version_num AS app,
-		app_version_mflops AS app_mops,
-		wu_rsc_mfpops_est,
-		domain_name,
-		p_mfpops + p_miops AS host_mops
+		domain_name
 	FROM 
-		result r JOIN host h USING (host_cpid) 
+		result r 
+		JOIN host h USING (host_cpid) 
+		LEFT JOIN task t USING (task_id)
 	ORDER BY 
-		updated DESC, domain_name;
+		1 DESC, domain_name;
 
  -- view latest result
 DROP VIEW IF EXISTS instant_cluster_state;
 CREATE VIEW instant_cluster_state AS
 	SELECT * FROM cluster_state 
-	WHERE updated = datetime((SELECT max(updated) FROM result), 'localtime');
+	WHERE created = datetime((SELECT max(created) FROM result), 'localtime');
 	
 -- simplified view of hosts 
 DROP VIEW IF EXISTS hosts;
 CREATE VIEW hosts AS 
-	select domain_name, hostname, product_name, p_ncpus, p_mfpops
-	from host order by domain_name;
+	select domain_name, hostname, product_name, p_ncpus, p_mfpops + p_miops as mops
+	from host 
+	order by 1;
 
+
+-- ---------------------------------------------------------------------------
+-- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h
+-- #define RESULT_NEW                  0    // New result
+-- #define RESULT_FILES_DOWNLOADING    1    // Input files for result (WU, app version) are being downloaded
+-- #define RESULT_FILES_DOWNLOADED     2    // Files are downloaded, result can be (or is being) computed
+-- #define RESULT_COMPUTE_ERROR        3    // computation failed; no file upload
+-- #define RESULT_FILES_UPLOADING      4    // Output files for result are being uploaded
+-- #define RESULT_FILES_UPLOADED       5    // Files are uploaded, notify scheduling server at some point
+-- #define RESULT_ABORTED              6    // result was aborted
+-- #define RESULT_UPLOAD_FAILED        7    // some output file permanent failure
+--
+-- values of ACTIVE_TASK::task_state
+-- #define PROCESS_UNINITIALIZED   0	    // process doesn't exist yet
+-- #define PROCESS_EXECUTING       1	    // process is running, as far as we know
+-- #define PROCESS_SUSPENDED       9	    // we've sent it a "suspend" message
+-- #define PROCESS_ABORT_PENDING   5	    // process exceeded limits; send "abort" message, waiting to exit
+-- #define PROCESS_QUIT_PENDING    8	    // we've sent it a "quit" message, waiting to exit
+-- #define PROCESS_COPY_PENDING    10	    // waiting for async file copies to finish
