@@ -6,9 +6,9 @@
 #
 ##############################################################################
 
-# readonly DATABASE=boinc_cluster_state.db
+readonly DATABASE=boinc_cluster_state.db
 #readonly DATABASE=t/_test.db # for testing
-readonly DATABASE=t.db
+#readonly DATABASE=t.db
 
 readonly NULL_ROW='{ "c": [] }'
 
@@ -19,11 +19,6 @@ readonly COLUMN_DEFS='
 		"type": "datetime"
 	},
 	{
-		"id": "yoyo",
-		"label": "yoyo@home",
-		"type": "number"
-	},
-	{
 		"id": "aster",
 		"label": "Asteroids@home",
 		"type": "number"
@@ -31,6 +26,11 @@ readonly COLUMN_DEFS='
 	{
 		"id": "wcg",
 		"label": "World Community Grid",
+		"type": "number"
+	},
+	{
+		"id": "yoyo",
+		"label": "yoyo@home",
 		"type": "number"
 	}'
 
@@ -47,7 +47,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
     WHERE 
         datetime(created) >= datetime('now', '-28 day')
         AND active_task_state = 1 -- executing
-    GROUP BY 1,2,3"
+    GROUP BY 1, 2, 3"
 # Comments: 
 # it's static: cannot adapt to new apps, so:
 # we group by project, not app
@@ -60,9 +60,9 @@ readonly SQL_SELECT_JSON="
             json_array( 
 				-- dumbass JSON dates use 0-based months
                 json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
-                json_object('v', yoyo),
                 json_object('v', aster),
-                json_object('v', wcg)
+                json_object('v', wcg),
+                json_object('v', yoyo)
                 ))
     FROM ( $SQL_SELECT_PIVOT_PROJECT )"
 

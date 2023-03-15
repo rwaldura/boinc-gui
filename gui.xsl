@@ -128,22 +128,21 @@
 								pieHole: 0.4,
 							} );
 							
-						loadTimeChartData("_data-table.json");
+						loadTimeChartData();
 					} );					
 				</script>
 			</head>
 			<body>
 				<div id="top_left">
 					<div id="pie_chart_div"/> <!-- pie chart -->
-					<div class="vertical_chart_title">Instant Cluster Utilization</div>
+					<div class="vertical_chart_title">Instant Cluster Load</div>
 				</div>
 				<div id="top_right">
 					<x:apply-templates mode="html" />
 				</div>
 				<div id="bot_left">
-					<div class="chart_title">Cluster Utilization</div>
 					<div id="time_chart_div">
-						<p><i>other chart here</i></p>
+						<p><i>loading...</i></p>
 					</div> 
 				</div>
 			</body>
