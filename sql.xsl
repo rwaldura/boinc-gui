@@ -70,7 +70,12 @@
 				<x:value-of select="active_task/scheduler_state" /> ,
 				<x:value-of select="active_task/current_cpu_time" /> ,
 				<x:value-of select="active_task/elapsed_time" /> ,
-				<x:value-of select="active_task/progress_rate" />
+				<x:choose>
+					<x:when test="active_task/progress_rate">
+						<x:value-of select="active_task/progress_rate" />
+					</x:when>
+					<x:otherwise>NULL</x:otherwise>
+				</x:choose>
 			);			
 		</x:if>
 		

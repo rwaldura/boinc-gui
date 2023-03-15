@@ -6,9 +6,9 @@
 #
 ##############################################################################
 
-readonly DATABASE=boinc_cluster_state.db
+# readonly DATABASE=boinc_cluster_state.db
 #readonly DATABASE=t/_test.db # for testing
-#readonly DATABASE=prod.db
+readonly DATABASE=t.db
 
 readonly NULL_ROW='{ "c": [] }'
 
@@ -39,17 +39,18 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         strftime('%Y', created, 'localtime') as created_y,
         strftime('%m', created, 'localtime') as created_m,
         strftime('%d', created, 'localtime') as created_d,
-        COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result_name END) AS yoyo,
-        COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result_name END) AS wcg,
-        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result_name END) AS aster
+        COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN name END) AS yoyo,
+        COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN name END) AS wcg,
+        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN name END) AS aster
     FROM 
-        result1
+        result JOIN task USING (task_id)
     WHERE 
-        datetime(created) >= datetime('now', '-14 day')
+        datetime(created) >= datetime('now', '-28 day')
+        AND active_task_state = 1 -- executing
     GROUP BY 1,2,3"
 # Comments: 
 # it's static: cannot adapt to new apps, so:
-# it groups by project, not app
+# we group by project, not app
 # project names are fixed 
 # Pro: it's super fast
 
