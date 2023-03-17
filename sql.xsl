@@ -140,7 +140,7 @@
 			category,
 			link,
 			seqno,
-			hostname
+			host_cpid
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="title" />' ,
@@ -152,7 +152,7 @@
 			'<x:value-of select="category" />' ,
 			'<x:value-of select="link" />' ,
 			<x:value-of select="seqno" /> ,
-			'<x:value-of select="../../../@hostname" />'
+			(SELECT host_cpid FROM host where hostname = '<x:value-of select="../../../@hostname" />')
 		);
 	</x:template>	
 
@@ -164,7 +164,7 @@
 			body,
 			pri, 
 			seqno,
-			hostname
+			host_cpid
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			datetime(<x:value-of select="time" />, 'unixepoch') ,
@@ -172,7 +172,7 @@
 			'<x:value-of select="translate(body, $apos, ' ')" />' ,
 			<x:value-of select="pri" /> ,			
 			<x:value-of select="seqno" /> ,
-			'<x:value-of select="../../../@hostname" />'
+			(SELECT host_cpid FROM host where hostname = '<x:value-of select="../../../@hostname" />')
 		);
 	</x:template>
 

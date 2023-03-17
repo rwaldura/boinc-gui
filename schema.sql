@@ -2,7 +2,8 @@
 -- Database schema.
 --
 
--- store host details
+-- ---------------------------------------------------------------------------
+-- host details
 CREATE TABLE host (
 	host_cpid STRING PRIMARY KEY,
 	updated DATETIME,
@@ -18,6 +19,7 @@ CREATE TABLE host (
 	p_miops INTEGER		-- megaflops
 );
 
+-- ---------------------------------------------------------------------------
 CREATE TABLE task (
 	task_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	fraction_done DOUBLE,
@@ -28,7 +30,8 @@ CREATE TABLE task (
 	progress_rate DOUBLE	
 );
 
--- store computational state
+-- ---------------------------------------------------------------------------
+-- computational state
 CREATE TABLE result (
 	name STRING NOT NULL,
 	host_cpid STRING NOT NULL,
@@ -58,7 +61,7 @@ CREATE INDEX result_created ON result(created);
 CREATE INDEX result_created_date ON result(date(created));
 CREATE INDEX result_created_datetime ON result(datetime(created));
 
-
+-- ---------------------------------------------------------------------------
 CREATE TABLE message (
 	updated DATETIME,
 	created DATETIME,
@@ -66,23 +69,31 @@ CREATE TABLE message (
 	body STRING,
 	pri INTEGER, 
 	seqno INTEGER,
-	hostname STRING
+	host_cpid STRING,
+	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
- 
+
+CREATE UNIQUE INDEX message_unique ON message(host_cpid, created, seqno);
+
+-- ---------------------------------------------------------------------------
 CREATE TABLE notice (
 	updated DATETIME,
-	title STRING,
-	description STRING,	 
 	create_time DATETIME,
 	arrival_time DATETIME,
+	title STRING,
+	description STRING,	 
 	is_private BOOLEAN,
 	project_name STRING,
 	category STRING,
 	link STRING,
 	seqno INTEGER,
-	hostname STRING
+	host_cpid STRING,
+	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
 
+CREATE UNIQUE INDEX notice_unique ON notice(host_cpid, create_time, seqno);
+
+-- ---------------------------------------------------------------------------
 -- convenient join between tables above
 DROP VIEW IF EXISTS cluster_state;
 CREATE VIEW cluster_state AS
