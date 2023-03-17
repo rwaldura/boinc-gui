@@ -58,7 +58,32 @@ CREATE INDEX result_created ON result(created);
 CREATE INDEX result_created_date ON result(date(created));
 CREATE INDEX result_created_datetime ON result(datetime(created));
 
--- natural join between both tables above
+
+CREATE TABLE message (
+	updated DATETIME,
+	created DATETIME,
+	project STRING,
+	body STRING,
+	pri INTEGER, 
+	seqno INTEGER,
+	hostname STRING
+);
+ 
+CREATE TABLE notice (
+	updated DATETIME,
+	title STRING,
+	description STRING,	 
+	create_time DATETIME,
+	arrival_time DATETIME,
+	is_private BOOLEAN,
+	project_name STRING,
+	category STRING,
+	link STRING,
+	seqno INTEGER,
+	hostname STRING
+);
+
+-- convenient join between tables above
 DROP VIEW IF EXISTS cluster_state;
 CREATE VIEW cluster_state AS
 	SELECT 
@@ -99,9 +124,16 @@ CREATE VIEW hosts AS
 -- #define RESULT_UPLOAD_FAILED        7    // some output file permanent failure
 --
 -- values of ACTIVE_TASK::task_state
--- #define PROCESS_UNINITIALIZED   0	    // process doesn't exist yet
--- #define PROCESS_EXECUTING       1	    // process is running, as far as we know
--- #define PROCESS_SUSPENDED       9	    // we've sent it a "suspend" message
--- #define PROCESS_ABORT_PENDING   5	    // process exceeded limits; send "abort" message, waiting to exit
--- #define PROCESS_QUIT_PENDING    8	    // we've sent it a "quit" message, waiting to exit
--- #define PROCESS_COPY_PENDING    10	    // waiting for async file copies to finish
+-- #define PROCESS_UNINITIALIZED   0        // process doesn't exist yet
+-- #define PROCESS_EXECUTING       1        // process is running, as far as we know
+-- #define PROCESS_SUSPENDED       9        // we've sent it a "suspend" message
+-- #define PROCESS_ABORT_PENDING   5        // process exceeded limits; send "abort" message, waiting to exit
+-- #define PROCESS_QUIT_PENDING    8        // we've sent it a "quit" message, waiting to exit
+-- #define PROCESS_COPY_PENDING    10       // waiting for async file copies to finish
+--
+-- values of ACTIVE_TASK::scheduler_state and ACTIVE_TASK::next_scheduler_state
+-- "SCHEDULED" doesn't mean the task is actually running;
+-- e.g. it won't be running if tasks are suspended or CPU throttling is in use
+-- #define CPU_SCHED_UNINITIALIZED   0
+-- #define CPU_SCHED_PREEMPTED       1
+-- #define CPU_SCHED_SCHEDULED       2
