@@ -26,6 +26,8 @@ readonly XSLT=gui.xsl
 
 readonly NOW=$( date -Iseconds )
 
+readonly REQUEST=${1:-get_state}
+
 ##############################################################################
 debug()
 {
@@ -46,7 +48,7 @@ fi
 # each task executes concurrently
 for node in $NODES
 do
-	./boinc-gui-rpc.zsh $node get_state >$TEMP-$node 2>$TEMP-$node.err & 
+	./boinc-gui-rpc.zsh $node $REQUEST >$TEMP-$node 2>$TEMP-$node.err & 
 	debug "$! is getting state for $node"
 done
 

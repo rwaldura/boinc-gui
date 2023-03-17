@@ -125,6 +125,57 @@
 		);
 	</x:template>	
 
+	<x:variable name="apos">&apos;</x:variable>
+	<x:variable name="quot">&quot;</x:variable>
+
+	<x:template match="notice">
+		INSERT OR REPLACE INTO notice (
+			updated,
+			title,
+			description, 
+			create_time,
+			arrival_time,
+			is_private,
+			project_name,
+			category,
+			link,
+			seqno,
+			hostname
+		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="title" />' ,
+			'<x:value-of select="translate(description, $apos, ' ')" />' ,
+			datetime(<x:value-of select="create_time" />, 'unixepoch') ,
+			datetime(<x:value-of select="arrival_time" />, 'unixepoch') ,
+			<x:value-of select="is_private" /> ,
+			'<x:value-of select="project_name" />' ,
+			'<x:value-of select="category" />' ,
+			'<x:value-of select="link" />' ,
+			<x:value-of select="seqno" /> ,
+			'<x:value-of select="../../../@hostname" />'
+		);
+	</x:template>	
+
+	<x:template match="msg">
+		INSERT OR REPLACE INTO message (
+			updated,
+			created,
+			project,
+			body,
+			pri, 
+			seqno,
+			hostname
+		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			datetime(<x:value-of select="time" />, 'unixepoch') ,
+			'<x:value-of select="project" />' ,
+			'<x:value-of select="translate(body, $apos, ' ')" />' ,
+			<x:value-of select="pri" /> ,			
+			<x:value-of select="seqno" /> ,
+			'<x:value-of select="../../../@hostname" />'
+		);
+	</x:template>
+
 	<!-- ignore stray text in all nodes -->
 	<x:template match="text()" />	
 
