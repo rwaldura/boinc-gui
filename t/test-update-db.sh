@@ -13,24 +13,49 @@ num_results=$( sqlite3 -noheader -list _test.db "SELECT COUNT(*) FROM result" )
 echo "$num_results result records"
 test "$num_results" -gt "$num_hosts" || exit 1
 
-sqlite3 _test.db "
+num_messages=$( sqlite3 -noheader -list _test.db "SELECT COUNT(*) FROM message" )
+echo "$num_messages message records"
+test "$num_messages" -gt 1 || exit 1
+
+num_notices=$( sqlite3 -noheader -list _test.db "SELECT COUNT(*) FROM notice" )
+echo "$num_notices notice records"
+test "$num_notices" -lt "$num_messages" || exit 1
+
+sqlite3 _test.db <<_SQL_
+select "##### CLUSTER STATE ##########################";
+
 SELECT 
-	strftime('%Y-%m-%d %H:%M', r.created, 'localtime') as updated, 
-	round(100 * t.fraction_done) as '%done', 
-	CASE -- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h#L164
-		WHEN state = 2 THEN 'FILES_DOWNLOADED'
-		WHEN state = 4 THEN 'FILES_UPLOADING'
-	END AS result_state,
-	final_elapsed_time,
-	estimated_cpu_time_remaining,
-	app_name || '-' || app_version_num AS BOINC_App,
-	app_version_mflops AS app_mops,
-	domain_name,
-	p_mfpops + p_miops AS host_mops
+    strftime('%Y-%m-%d %H:%M', r.created, 'localtime') as updated, 
+    strftime('%Y-%m-%d %H:%M', r.received, 'localtime') as received,    
+    round(100 * t.fraction_done) as '%done', 
+    CASE -- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h#L164
+        WHEN state = 2 THEN 'FILES_DOWNLOADED'
+        WHEN state = 4 THEN 'FILES_UPLOADING'
+    END AS result_state,
+    iif(final_elapsed_time > 0, time(final_elapsed_time), NULL) AS total_elapsed,
+    iif(estimated_cpu_time_remaining > 0, time(estimated_cpu_time_remaining), NULL) AS remaining,
+    app_name || '-' || app_version_num AS BOINC_App,
+    domain_name,
+    p_mfpops + p_miops AS host_mops
 FROM 
-	result r JOIN host h USING (host_cpid) 
-	LEFT JOIN task t using (task_id)
+    result r JOIN host h USING (host_cpid) 
+    LEFT JOIN task t using (task_id)
 ORDER BY 
-	created DESC, domain_name, 2"
-	
+    created DESC, domain_name, 3;
+
+select "##### LAST LOG MESSAGE FOR EACH NODE ##########################";
+
+select
+    datetime(created, 'localtime') as created, 
+    domain_name, 
+    project,
+    substr(trim(body, X'0A'), 0, 50) as message
+from 
+    message JOIN 
+    (select host_cpid, max(created) as created, max(seqno) as seqno from message group by 1)
+    USING (created, seqno, host_cpid)
+    LEFT JOIN host using (host_cpid)
+order by 1 desc
+_SQL_
+
 exit $?

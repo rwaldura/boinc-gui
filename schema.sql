@@ -48,8 +48,8 @@ CREATE TABLE result (
 	final_elapsed_time DOUBLE, 
 	exit_status INTEGER,
 	state INTEGER,
-	report_deadline DOUBLE,
-	received_time DOUBLE,
+	report_deadline DATETIME,
+	received DATETIME,
 	estimated_cpu_time_remaining DOUBLE,
 	task_id INTEGER,
 	
@@ -78,8 +78,8 @@ CREATE UNIQUE INDEX message_unique ON message(host_cpid, created, seqno);
 -- ---------------------------------------------------------------------------
 CREATE TABLE notice (
 	updated DATETIME,
-	create_time DATETIME,
-	arrival_time DATETIME,
+	created DATETIME,
+	arrived DATETIME,
 	title STRING,
 	description STRING,	 
 	is_private BOOLEAN,
@@ -91,7 +91,7 @@ CREATE TABLE notice (
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
 
-CREATE UNIQUE INDEX notice_unique ON notice(host_cpid, create_time, seqno);
+CREATE UNIQUE INDEX notice_unique ON notice(host_cpid, created, seqno);
 
 -- ---------------------------------------------------------------------------
 -- convenient join between tables above
@@ -148,3 +148,14 @@ CREATE VIEW hosts AS
 -- #define CPU_SCHED_UNINITIALIZED   0
 -- #define CPU_SCHED_PREEMPTED       1
 -- #define CPU_SCHED_SCHEDULED       2
+
+
+-- alter table result add column received datetime;
+-- update result set received = datetime(received_time, 'unixepoch');
+-- alter table result drop column received_time;
+--
+-- alter table result add column report_dl datetime;
+-- update result set report_dl = datetime(report_deadline, 'unixepoch');
+-- alter table result drop column report_deadline;
+-- alter table result rename column report_dl TO report_deadline;
+

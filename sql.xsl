@@ -96,7 +96,7 @@
 			exit_status,
 			state,
 			report_deadline,
-			received_time,
+			received,
 			estimated_cpu_time_remaining,
 			task_id
 		) VALUES (
@@ -115,8 +115,8 @@
 			<x:value-of select="final_elapsed_time" /> ,
 			<x:value-of select="exit_status" /> ,
 			<x:value-of select="state" /> ,
-			<x:value-of select="report_deadline" /> ,
-			<x:value-of select="received_time" /> ,
+			datetime(<x:value-of select="report_deadline" />, 'unixepoch') ,
+			datetime(<x:value-of select="received_time" />, 'unixepoch') ,
 			<x:value-of select="estimated_cpu_time_remaining" /> ,
 			<x:choose>
 				<x:when test="active_task">last_insert_rowid()</x:when>
@@ -133,8 +133,8 @@
 			updated,
 			title,
 			description, 
-			create_time,
-			arrival_time,
+			created,
+			arrived,
 			is_private,
 			project_name,
 			category,
@@ -152,7 +152,7 @@
 			'<x:value-of select="category" />' ,
 			'<x:value-of select="link" />' ,
 			<x:value-of select="seqno" /> ,
-			(SELECT host_cpid FROM host where hostname = '<x:value-of select="../../../@hostname" />')
+			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />')
 		);
 	</x:template>	
 
@@ -172,7 +172,7 @@
 			'<x:value-of select="translate(body, $apos, ' ')" />' ,
 			<x:value-of select="pri" /> ,			
 			<x:value-of select="seqno" /> ,
-			(SELECT host_cpid FROM host where hostname = '<x:value-of select="../../../@hostname" />')
+			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />')
 		);
 	</x:template>
 
