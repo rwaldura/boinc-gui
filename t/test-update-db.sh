@@ -48,7 +48,7 @@ select "##### LAST LOG MESSAGE FOR EACH NODE ##########################";
 select
     datetime(created, 'localtime') as created, 
     domain_name, 
-    project,
+    project_name,
     substr(trim(body, X'0A'), 0, 50) as message
 from 
     message JOIN 

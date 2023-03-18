@@ -65,7 +65,7 @@ CREATE INDEX result_created_datetime ON result(datetime(created));
 CREATE TABLE message (
 	updated DATETIME,
 	created DATETIME,
-	project STRING,
+	project_name STRING,
 	body STRING,
 	pri INTEGER, 
 	seqno INTEGER,

@@ -160,7 +160,7 @@
 		INSERT OR REPLACE INTO message (
 			updated,
 			created,
-			project,
+			project_name,
 			body,
 			pri, 
 			seqno,
