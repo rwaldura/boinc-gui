@@ -52,7 +52,6 @@ CREATE TABLE result (
 	received DATETIME,
 	estimated_cpu_time_remaining DOUBLE,
 	task_id INTEGER,
-	
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid),
 	FOREIGN KEY (task_id) REFERENCES task(task_id)
 );
@@ -68,7 +67,8 @@ CREATE TABLE message (
 	project_name STRING,
 	body STRING,
 	pri INTEGER, 
-	seqno INTEGER,
+	seqno INTEGER,		-- resets upon client restart
+	hostname STRING,	-- how we actually reached the client, could be an IP address
 	host_cpid STRING,
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );
@@ -87,6 +87,7 @@ CREATE TABLE notice (
 	category STRING,
 	link STRING,
 	seqno INTEGER,
+	hostname STRING,	-- how we actually reached the client, could be an IP address
 	host_cpid STRING,
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
 );

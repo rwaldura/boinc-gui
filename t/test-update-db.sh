@@ -22,7 +22,7 @@ echo "$num_notices notice records"
 test "$num_notices" -lt "$num_messages" || exit 1
 
 sqlite3 _test.db <<_SQL_
-select "##### CLUSTER STATE ##########################";
+-- ##### CLUSTER STATE ##########################
 
 SELECT 
     strftime('%Y-%m-%d %H:%M', r.created, 'localtime') as updated, 
@@ -43,19 +43,30 @@ FROM
 ORDER BY 
     created DESC, domain_name, 3;
 
-select "##### LAST LOG MESSAGE FOR EACH NODE ##########################";
+-- ##### LAST LOG MESSAGE FOR EACH NODE ##########################
 
 select
     datetime(created, 'localtime') as created, 
+	m.hostname,
     domain_name, 
     project_name,
-    substr(trim(body, X'0A'), 0, 50) as message
+    substr(trim(body, X'0A'), 0, 50) as mesg
 from 
-    message JOIN 
-    (select host_cpid, max(created) as created, max(seqno) as seqno from message group by 1)
-    USING (created, seqno, host_cpid)
+    message m
+    JOIN (select host_cpid, max(created) as created, max(seqno) as seqno from message group by 1)
+    	USING (host_cpid, created, seqno)
     LEFT JOIN host using (host_cpid)
-order by 1 desc
+order by 1 desc;
+
+-- ##### NOTICES ##########################
+
+select
+    title,
+    substr(trim(description, X'0A'), 0, 50) as notice,
+    group_concat(domain_name)
+from 
+    notice left join host using (host_cpid)
+group by 1, 2;
 _SQL_
 
 exit $?

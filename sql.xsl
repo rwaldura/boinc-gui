@@ -10,9 +10,9 @@
 	<x:output method="text" encoding="UTF-8" />
 
 	<x:template match="/boinc_cluster_state">
-		BEGIN;
+		BEGIN TRANSACTION;
 		<x:apply-templates />		
-		COMMIT;
+		COMMIT TRANSACTION;
 	</x:template>	
 
 	<!-- host_info -->
@@ -129,7 +129,7 @@
 	<x:variable name="quot">&quot;</x:variable>
 
 	<x:template match="notice">
-		INSERT OR REPLACE INTO notice (
+		INSERT INTO notice (
 			updated,
 			title,
 			description, 
@@ -140,6 +140,7 @@
 			category,
 			link,
 			seqno,
+			hostname,
 			host_cpid
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
@@ -152,18 +153,23 @@
 			'<x:value-of select="category" />' ,
 			'<x:value-of select="link" />' ,
 			<x:value-of select="seqno" /> ,
+			'<x:value-of select="../../../@hostname" />' ,
 			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />')
-		);
+		)
+		-- based on the presence of the tuple {host_cpid,created,seqno}, 
+		-- we determine this notice is a duplicate: only set the "updated" date
+		ON CONFLICT DO UPDATE SET updated = excluded.updated;
 	</x:template>	
 
 	<x:template match="msg">
-		INSERT OR REPLACE INTO message (
+		INSERT INTO message (
 			updated,
 			created,
 			project_name,
 			body,
 			pri, 
 			seqno,
+			hostname,
 			host_cpid
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
@@ -172,8 +178,12 @@
 			'<x:value-of select="translate(body, $apos, ' ')" />' ,
 			<x:value-of select="pri" /> ,			
 			<x:value-of select="seqno" /> ,
+			'<x:value-of select="../../../@hostname" />' ,
 			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />')
-		);
+		)
+		-- based on the presence of the tuple {host_cpid,created,seqno}, 
+		-- we determine this message is a duplicate: only set the "updated" date
+		ON CONFLICT DO UPDATE SET updated = excluded.updated;
 	</x:template>
 
 	<!-- ignore stray text in all nodes -->

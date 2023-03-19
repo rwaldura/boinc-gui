@@ -12,11 +12,11 @@ test "$num_results" -gt 1 || exit 1
 
 test "$num_results" -gt "$num_hosts"
 
-num_messages=$( grep -c "INSERT OR REPLACE INTO message" _update.sql )
+num_messages=$( grep -c "INSERT INTO message" _update.sql )
 echo "$num_messages message INSERTs"
 test "$num_messages" -gt 1 || exit 1
 
-num_notices=$( grep -c "INSERT OR REPLACE INTO notice" _update.sql )
+num_notices=$( grep -c "INSERT INTO notice" _update.sql )
 echo "$num_notices notice INSERTs"
 test "$num_notices" -gt 1 || exit 1
 
