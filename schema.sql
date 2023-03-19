@@ -27,7 +27,9 @@ CREATE TABLE task (
 	scheduler_state INTEGER,
 	current_cpu_time DOUBLE,
 	elapsed_time DOUBLE,
-	progress_rate DOUBLE	
+	progress_rate DOUBLE,
+	FOREIGN KEY (active_task_state) REFERENCES task_state(code),
+	FOREIGN KEY (scheduler_state) REFERENCES scheduler_state(code)
 );
 
 -- ---------------------------------------------------------------------------
@@ -53,7 +55,8 @@ CREATE TABLE result (
 	estimated_cpu_time_remaining DOUBLE,
 	task_id INTEGER,
 	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid),
-	FOREIGN KEY (task_id) REFERENCES task(task_id)
+	FOREIGN KEY (task_id) REFERENCES task(task_id),
+	FOREIGN KEY (state) REFERENCES result_state(code)
 );
 
 CREATE INDEX result_created ON result(created);
@@ -124,6 +127,27 @@ CREATE VIEW hosts AS
 	order by 1;
 
 
+CREATE TABLE result_state (
+	code INTEGER PRIMARY KEY,
+	shortname STRING,
+	name STRING,
+	description STRING
+);
+
+CREATE TABLE task_state (
+	code INTEGER PRIMARY KEY,
+	shortname STRING,
+	name STRING,
+	description STRING
+);
+
+CREATE TABLE scheduler_state (
+	code INTEGER PRIMARY KEY,
+	shortname STRING,
+	name STRING,
+	description STRING
+);
+
 -- ---------------------------------------------------------------------------
 -- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h
 -- #define RESULT_NEW                  0    // New result
@@ -136,11 +160,11 @@ CREATE VIEW hosts AS
 -- #define RESULT_UPLOAD_FAILED        7    // some output file permanent failure
 --
 -- values of ACTIVE_TASK::task_state
--- #define PROCESS_UNINITIALIZED   0        // process doesn't exist yet
+-- #define PROCESS_UNINITIALIZED   0        // process does not exist yet
 -- #define PROCESS_EXECUTING       1        // process is running, as far as we know
--- #define PROCESS_SUSPENDED       9        // we've sent it a "suspend" message
+-- #define PROCESS_SUSPENDED       9        // we sent it a "suspend" message
 -- #define PROCESS_ABORT_PENDING   5        // process exceeded limits; send "abort" message, waiting to exit
--- #define PROCESS_QUIT_PENDING    8        // we've sent it a "quit" message, waiting to exit
+-- #define PROCESS_QUIT_PENDING    8        // we sent it a "quit" message, waiting to exit
 -- #define PROCESS_COPY_PENDING    10       // waiting for async file copies to finish
 --
 -- values of ACTIVE_TASK::scheduler_state and ACTIVE_TASK::next_scheduler_state
@@ -150,13 +174,20 @@ CREATE VIEW hosts AS
 -- #define CPU_SCHED_PREEMPTED       1
 -- #define CPU_SCHED_SCHEDULED       2
 
-
--- alter table result add column received datetime;
--- update result set received = datetime(received_time, 'unixepoch');
--- alter table result drop column received_time;
---
--- alter table result add column report_dl datetime;
--- update result set report_dl = datetime(report_deadline, 'unixepoch');
--- alter table result drop column report_deadline;
--- alter table result rename column report_dl TO report_deadline;
-
+INSERT INTO result_state VALUES (0, 'NEW', 'RESULT_NEW', 'New result');
+INSERT INTO result_state VALUES (1, 'FILES_DOWNLOADING', 'RESULT_FILES_DOWNLOADING', 'Input files for result (WU, app version) are being downloaded');
+INSERT INTO result_state VALUES (2, 'FILES_DOWNLOADED', 'RESULT_FILES_DOWNLOADED', 'Files are downloaded, result can be (or is being) computed');
+INSERT INTO result_state VALUES (3, 'COMPUTE_ERROR', 'RESULT_COMPUTE_ERROR', 'computation failed; no file upload');
+INSERT INTO result_state VALUES (4, 'FILES_UPLOADING', 'RESULT_FILES_UPLOADING', 'Output files for result are being uploaded');
+INSERT INTO result_state VALUES (5, 'FILES_UPLOADED', 'RESULT_FILES_UPLOADED', 'Files are uploaded, notify scheduling server at some point');
+INSERT INTO result_state VALUES (6, 'ABORTED', 'RESULT_ABORTED', 'result was aborted');
+INSERT INTO result_state VALUES (7, 'UPLOAD_FAILED', 'RESULT_UPLOAD_FAILED', 'some output file permanent failure');
+INSERT INTO task_state VALUES (0, 'UNINITIALIZED', 'PROCESS_UNINITIALIZED', 'process does not exist yet');
+INSERT INTO task_state VALUES (1, 'EXECUTING', 'PROCESS_EXECUTING', 'process is running, as far as we know');
+INSERT INTO task_state VALUES (9, 'SUSPENDED', 'PROCESS_SUSPENDED', 'we sent it a "suspend" message');
+INSERT INTO task_state VALUES (5, 'ABORT_PENDING', 'PROCESS_ABORT_PENDING', 'process exceeded limits; send "abort" message, waiting to exit');
+INSERT INTO task_state VALUES (8, 'QUIT_PENDING', 'PROCESS_QUIT_PENDING', 'we sent it a "quit" message, waiting to exit');
+INSERT INTO task_state VALUES (10, 'COPY_PENDING', 'PROCESS_COPY_PENDING', 'waiting for async file copies to finish');
+INSERT INTO scheduler_state VALUES (0, 'UNINITIALIZED', 'CPU_SCHED_UNINITIALIZED', '');
+INSERT INTO scheduler_state VALUES (1, 'PREEMPTED', 'CPU_SCHED_PREEMPTED', '');
+INSERT INTO scheduler_state VALUES (2, 'SCHEDULED', 'CPU_SCHED_SCHEDULED', '');
