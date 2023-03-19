@@ -120,6 +120,7 @@ CREATE VIEW hosts AS
 	order by 1;
 
 
+-- ---------------------------------------------------------------------------
 CREATE TABLE result_state (
 	code INTEGER PRIMARY KEY,
 	shortname STRING,
@@ -141,7 +142,6 @@ CREATE TABLE scheduler_state (
 	description STRING
 );
 
--- ---------------------------------------------------------------------------
 -- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h
 -- #define RESULT_NEW                  0    // New result
 -- #define RESULT_FILES_DOWNLOADING    1    // Input files for result (WU, app version) are being downloaded
@@ -166,6 +166,12 @@ CREATE TABLE scheduler_state (
 -- #define CPU_SCHED_UNINITIALIZED   0
 -- #define CPU_SCHED_PREEMPTED       1
 -- #define CPU_SCHED_SCHEDULED       2
+
+-- perl -ne '$c = chr(39); 
+-- if (($word, $code, $descr) = m{^-- #define (\w+)\s+(\d+)\s*/* *(.*)}) { 
+--     $w = $word; $w =~ s/^([A-Z]+)_//; 
+--     print "INSERT INTO XXX VALUES ($code, $c$w$c, $c$word$c, $c$descr$c);\n" 
+-- }' < schema.sql >> schema.sql
 
 INSERT INTO result_state VALUES (0, 'NEW', 'RESULT_NEW', 'New result');
 INSERT INTO result_state VALUES (1, 'FILES_DOWNLOADING', 'RESULT_FILES_DOWNLOADING', 'Input files for result (WU, app version) are being downloaded');
