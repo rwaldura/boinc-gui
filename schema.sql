@@ -23,20 +23,18 @@ CREATE TABLE host (
 CREATE TABLE task (
 	task_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	fraction_done DOUBLE,
-	active_task_state INTEGER,
-	scheduler_state INTEGER,
+	active_task_state INTEGER REFERENCES task_state(code),
+	scheduler_state INTEGER REFERENCES scheduler_state(code),
 	current_cpu_time DOUBLE,
 	elapsed_time DOUBLE,
-	progress_rate DOUBLE,
-	FOREIGN KEY (active_task_state) REFERENCES task_state(code),
-	FOREIGN KEY (scheduler_state) REFERENCES scheduler_state(code)
+	progress_rate DOUBLE
 );
 
 -- ---------------------------------------------------------------------------
 -- computational state
 CREATE TABLE result (
 	name STRING NOT NULL,
-	host_cpid STRING NOT NULL,
+	host_cpid STRING NOT NULL REFERENCES host(host_cpid),
 	created DATETIME,
 	wu_name STRING,
 	wu_rsc_mfpops_est INTEGER,	-- megaflops
@@ -49,14 +47,11 @@ CREATE TABLE result (
 	final_cpu_time DOUBLE,
 	final_elapsed_time DOUBLE, 
 	exit_status INTEGER,
-	state INTEGER,
+	state INTEGER REFERENCES result_state(code),
 	report_deadline DATETIME,
 	received DATETIME,
 	estimated_cpu_time_remaining DOUBLE,
-	task_id INTEGER,
-	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid),
-	FOREIGN KEY (task_id) REFERENCES task(task_id),
-	FOREIGN KEY (state) REFERENCES result_state(code)
+	task_id INTEGER REFERENCES task(task_id)
 );
 
 CREATE INDEX result_created ON result(created);
@@ -72,8 +67,7 @@ CREATE TABLE message (
 	pri INTEGER, 
 	seqno INTEGER,		-- resets upon client restart
 	hostname STRING,	-- how we actually reached the client, could be an IP address
-	host_cpid STRING,
-	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
+	host_cpid STRING REFERENCES host(host_cpid)
 );
 
 CREATE UNIQUE INDEX message_unique ON message(host_cpid, created, seqno);
@@ -91,8 +85,7 @@ CREATE TABLE notice (
 	link STRING,
 	seqno INTEGER,
 	hostname STRING,	-- how we actually reached the client, could be an IP address
-	host_cpid STRING,
-	FOREIGN KEY (host_cpid) REFERENCES host(host_cpid)
+	host_cpid STRING REFERENCES host(host_cpid)
 );
 
 CREATE UNIQUE INDEX notice_unique ON notice(host_cpid, created, seqno);
@@ -182,12 +175,14 @@ INSERT INTO result_state VALUES (4, 'FILES_UPLOADING', 'RESULT_FILES_UPLOADING',
 INSERT INTO result_state VALUES (5, 'FILES_UPLOADED', 'RESULT_FILES_UPLOADED', 'Files are uploaded, notify scheduling server at some point');
 INSERT INTO result_state VALUES (6, 'ABORTED', 'RESULT_ABORTED', 'result was aborted');
 INSERT INTO result_state VALUES (7, 'UPLOAD_FAILED', 'RESULT_UPLOAD_FAILED', 'some output file permanent failure');
+
 INSERT INTO task_state VALUES (0, 'UNINITIALIZED', 'PROCESS_UNINITIALIZED', 'process does not exist yet');
 INSERT INTO task_state VALUES (1, 'EXECUTING', 'PROCESS_EXECUTING', 'process is running, as far as we know');
 INSERT INTO task_state VALUES (9, 'SUSPENDED', 'PROCESS_SUSPENDED', 'we sent it a "suspend" message');
 INSERT INTO task_state VALUES (5, 'ABORT_PENDING', 'PROCESS_ABORT_PENDING', 'process exceeded limits; send "abort" message, waiting to exit');
 INSERT INTO task_state VALUES (8, 'QUIT_PENDING', 'PROCESS_QUIT_PENDING', 'we sent it a "quit" message, waiting to exit');
 INSERT INTO task_state VALUES (10, 'COPY_PENDING', 'PROCESS_COPY_PENDING', 'waiting for async file copies to finish');
+
 INSERT INTO scheduler_state VALUES (0, 'UNINITIALIZED', 'CPU_SCHED_UNINITIALIZED', '');
 INSERT INTO scheduler_state VALUES (1, 'PREEMPTED', 'CPU_SCHED_PREEMPTED', '');
 INSERT INTO scheduler_state VALUES (2, 'SCHEDULED', 'CPU_SCHED_SCHEDULED', '');

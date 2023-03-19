@@ -3,7 +3,7 @@
 # create schema if no db
 test -f _test.db || sqlite3 _test.db < ../schema.sql || exit 1
 
-#sqlite3 _test.db < _update.sql || exit 1
+sqlite3 _test.db < _update.sql || exit 1
 
 num_hosts=$( sqlite3 -noheader -list _test.db "SELECT COUNT(*) FROM host" )
 echo "$num_hosts host records"
