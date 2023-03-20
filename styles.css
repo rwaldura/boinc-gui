@@ -118,14 +118,14 @@ body {
 .progress-bar-bg {
 	border-radius: 8px;
 	width: 150px;
-	height: 16px;
-	background-color: #c0c0c0;	
+	height: 12px;
+	background-color: #e0e0e0;	
 }
 
 .progress-bar {
 	position: relative;
-	top: -16px;
+	top: -12px;
 	border-radius: 8px;
-	height: 16px;
-	background-color: orange;
+	height: 12px;
+	background-color: lightgreen;
 }
