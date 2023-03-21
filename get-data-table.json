@@ -37,18 +37,23 @@ readonly COLUMN_DEFS='
 		"id": "yoyo",
 		"label": "yoyo",
 		"type": "number"
+	},
+	{
+		"id": "roset",
+		"label": "Rosetta",
+		"type": "number"
 	}'
 
 # it's static: cannot adapt to new apps, so:
 # we group by project, not app
 # project names are fixed 
 # Pro: it's super fast
-# Column order does not matter here
 readonly SQL_SELECT_PIVOT_PROJECT="
     SELECT 
         strftime('%Y', created, 'localtime') as created_y,
         strftime('%m', created, 'localtime') as created_m,
         strftime('%d', created, 'localtime') as created_d,
+        -- order does not matter here
         COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN name END) AS yoyo,
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN name END) AS wcg,
         COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN name END) AS aster,
@@ -61,17 +66,18 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         AND active_task_state = 1 -- executing
     GROUP BY 1, 2, 3"
 
-# ORDER MATTERS: must match $COLUMN_DEFS above 
 readonly SQL_SELECT_JSON="
     SELECT 
         json_object('c', 
             json_array( 
 				-- dumbass JSON dates use 0-based months
                 json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
+                -- order matters: must match COLUMN_DEFS above
                 json_object('v', aster),
                 json_object('v', univ),
                 json_object('v', wcg),
-                json_object('v', yoyo)
+                json_object('v', yoyo),
+                json_object('v', roset)
                 ))
     FROM ( $SQL_SELECT_PIVOT_PROJECT )"
 
