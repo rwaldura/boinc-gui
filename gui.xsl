@@ -73,6 +73,8 @@
 								{	// chart options
 									fontName: "Arial", // matches styles.css
 							        isStacked: true,
+									// slanted dates on horizontal axis
+									hAxis: { slantedText: true, slantedTextAngle: 30 }
 								} );
 						} catch (e) {
 							showError("Drawing charts: " + e);
@@ -129,7 +131,7 @@
 								pieHole: 0.4,
 							} );
 							
-						loadTimeChartData("t/_data-table.json");
+						loadTimeChartData(); ("t/_data-table.json");
 					} );					
 				</script>
 			</head>
