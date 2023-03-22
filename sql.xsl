@@ -5,6 +5,7 @@
   -->
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:str="http://exslt.org/strings"
 	version="1.0">
 
 	<x:output method="text" encoding="UTF-8" />
@@ -126,6 +127,7 @@
 	</x:template>	
 
 	<x:variable name="apos">&apos;</x:variable>
+	<x:variable name="dapos">&apos;&apos;</x:variable>
 	<x:variable name="quot">&quot;</x:variable>
 
 	<x:template match="notice">
@@ -145,7 +147,7 @@
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="title" />' ,
-			'<x:value-of select="translate(description, $apos, ' ')" />' ,
+			'<x:value-of select="str:replace(description, $apos, $dapos)" />' ,
 			datetime(<x:value-of select="create_time" />, 'unixepoch') ,
 			datetime(<x:value-of select="arrival_time" />, 'unixepoch') ,
 			<x:value-of select="is_private" /> ,
@@ -175,7 +177,7 @@
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			datetime(<x:value-of select="time" />, 'unixepoch') ,
 			'<x:value-of select="project" />' ,
-			'<x:value-of select="translate(body, $apos, ' ')" />' ,
+			'<x:value-of select="str:replace(body, $apos, $dapos)" />' ,
 			<x:value-of select="pri" /> ,			
 			<x:value-of select="seqno" /> ,
 			'<x:value-of select="../../../@hostname" />' ,
