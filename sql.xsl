@@ -160,7 +160,7 @@
 		)
 		-- based on the presence of the tuple {host_cpid,created,seqno}, 
 		-- we determine this notice is a duplicate: only set the "updated" date
-		ON CONFLICT DO UPDATE SET updated = excluded.updated;
+		ON CONFLICT (host_cpid,created,seqno) DO UPDATE SET updated = excluded.updated;
 	</x:template>	
 
 	<x:template match="msg">
@@ -185,7 +185,7 @@
 		)
 		-- based on the presence of the tuple {host_cpid,created,seqno}, 
 		-- we determine this message is a duplicate: only set the "updated" date
-		ON CONFLICT DO UPDATE SET updated = excluded.updated;
+		ON CONFLICT (host_cpid,created,seqno) DO UPDATE SET updated = excluded.updated;
 	</x:template>
 
 	<!-- ignore stray text in all nodes -->
