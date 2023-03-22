@@ -24,6 +24,11 @@ readonly COLUMN_DEFS='
 		"type": "number"
 	},
 	{
+		"id": "roset",
+		"label": "Rosetta",
+		"type": "number"
+	},
+	{
 		"id": "univ",
 		"label": "Universe",
 		"type": "number"
@@ -36,11 +41,6 @@ readonly COLUMN_DEFS='
 	{
 		"id": "yoyo",
 		"label": "yoyo",
-		"type": "number"
-	},
-	{
-		"id": "roset",
-		"label": "Rosetta",
 		"type": "number"
 	}'
 
@@ -72,12 +72,12 @@ readonly SQL_SELECT_JSON="
             json_array( 
 				-- dumbass JSON dates use 0-based months
                 json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
-                -- order matters: must match COLUMN_DEFS above
+                -- order must match COLUMN_DEFS above
                 json_object('v', aster),
+                json_object('v', roset),
                 json_object('v', univ),
                 json_object('v', wcg),
-                json_object('v', yoyo),
-                json_object('v', roset)
+                json_object('v', yoyo)
                 ))
     FROM ( $SQL_SELECT_PIVOT_PROJECT )"
 

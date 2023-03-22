@@ -62,7 +62,8 @@
 					
 						try {
 							const dt = new google.visualization.DataTable(json);
-							dt.sort(0); // order by day
+							dt.sort(0); // order rows by day
+							// columns are already ordered alphabetically
 													
 							<!-- const chart1 = new google.visualization.Table(time_chart_div); -->
 							<!-- const chart1 = new google.visualization.ColumnChart(time_chart_div); -->
@@ -111,12 +112,12 @@
 						// https://developers.google.com/chart/interactive/docs/reference#google_visualization_data_group
 						const grouped = google.visualization.data.group(
 							dt,
-							[ 1, 2 ], // group by "app" and "app_long" columns
+							[ 3, 2 ], // group by "project" and "app_long" columns
 							[ { column: 0, aggregation: google.visualization.data.count, type: 'number' } ] );
-						// ORDER BY app
+						// ORDER BY project
 						grouped.sort(0);
 						
-						// hide column 0: app short name; it was only used for ordering purposes
+						// hide column 0: project name; it was only used for ordering purposes
 						const dv = new google.visualization.DataView(grouped);
 						dv.hideColumns([0]);
 
@@ -128,19 +129,20 @@
 								pieHole: 0.4,
 							} );
 							
-						loadTimeChartData();
+						loadTimeChartData("t/_data-table.json");
 					} );					
 				</script>
 			</head>
 			<body>
 				<div id="top_left">
 					<div id="pie_chart_div"/> <!-- pie chart -->
-					<div class="vertical_chart_title">Instant Cluster Load</div>
+					<div class="vertical_chart_title">Instant Cluster Activity</div>
 				</div>
 				<div id="top_right">
 					<x:apply-templates mode="html" />
 				</div>
 				<div id="bot_left">
+					<div class="chart_title">Past Cluster Activity</div>
 					<div id="time_chart_div">
 						<p><i>loading...</i></p>
 					</div> 
@@ -182,7 +184,7 @@
 				<th/>
 			</tr>
 			<x:apply-templates select="boinc_client/boinc_gui_rpc_reply/client_state/result" mode="html">
-				<x:sort select="../workunit[name = current()/wu_name]/app_name" /> <!-- ordered by app name -->
+				<x:sort select="../project[master_url = current()/project_url]/project_name" /> <!-- ordered by project -->
 				<x:sort select="../host_info/domain_name" />
 			</x:apply-templates>
 		</table>

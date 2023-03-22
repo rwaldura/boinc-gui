@@ -25,4 +25,4 @@ xsltproc sql.xsl $temp_state $temp_messages $temp_notices |
 basex -c "open boinc; add $temp_state" &&
 	echo "updated XML database"
 
-echo rm $temp_state $temp_messages $temp_notices
+rm $temp_state $temp_messages $temp_notices
