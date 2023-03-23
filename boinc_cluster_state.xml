@@ -26,13 +26,22 @@ readonly XSLT=gui.xsl
 
 readonly NOW=$( date -Iseconds )
 
-readonly REQUEST=${1:-get_state}
-
 ##############################################################################
 debug()
 {
 	[[ "$DEBUG" ]] && print -u2 "++ $@"
 }
+
+##############################################################################
+# process command line arguments
+readonly RPC_REQUEST=${1:-get_state}
+shift
+
+declare -A RPC_PARAMS
+readonly RPC_PARAMS=( $* )
+
+debug "RPC request = " $RPC_REQUEST
+debug "RPC parameter map = " ${(kv)RPC_PARAMS}
 
 ##############################################################################
 # gather nodes
@@ -48,8 +57,9 @@ fi
 # each task executes concurrently
 for node in $NODES
 do
-	./boinc-gui-rpc.zsh $node $REQUEST >$TEMP-$node 2>$TEMP-$node.err & 
-	debug "$! is getting state for $node"
+	rpc_param=$RPC_PARAMS[$node]
+	./boinc-gui-rpc.zsh $node $RPC_REQUEST $rpc_param >$TEMP-$node 2>$TEMP-$node.err &
+	debug "$! is requesting from $node: $RPC_REQUEST $rpc_param"
 done
 
 wait # for all tasks to finish

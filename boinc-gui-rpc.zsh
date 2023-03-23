@@ -17,7 +17,9 @@ readonly RPC_PASSWORD=aoeu0
 readonly RPC_HOST=${1:?"Hostname required"}
 readonly RPC_PORT=31416
 
-readonly RPC_REQUEST=${2:-get_host_info} # default command
+readonly RPC_REQUEST=${2:-get_host_info} # default request
+readonly RPC_PARAM="$3" # request parameter, if any
+
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
 zmodload zsh/net/tcp # to create a socket
@@ -31,9 +33,14 @@ debug()
 ##############################################################################
 request()
 {
+	if [[ get_messages = "$1" && "$2" ]]
+	then
+		rpc_param="<seqno>$2</seqno>"
+	fi
+	
 	print -u$RPC_SERVER "
 <boinc_gui_rpc_request>
-$1
+<$1>$rpc_param</$1>
 </boinc_gui_rpc_request>$RPC_ETX"
 }
 
@@ -111,7 +118,7 @@ authenticate()
 # send the request, and output its response
 issue()
 {	
-	request "<$1/>"
+	request "$1" "$2"
 
 	# close the socket for writing:
 	#exec {RPC_SERVER}>&-
@@ -142,7 +149,7 @@ readonly RPC_SERVER="$REPLY"
 if [[ "$RPC_SERVER" ]] && authenticate
 then
 	debug "authenticated!"
-	issue "$RPC_REQUEST"
+	issue "$RPC_REQUEST" "$RPC_PARAM"
 else
 	print -u2 "Authentication failure: aborted"
 	exit 1
