@@ -14,7 +14,7 @@
 ##############################################################################
 
 readonly RPC_PASSWORD=aoeu0
-readonly RPC_HOST=${1:?"Hostname required"}
+readonly RPC_HOST=${1:?Hostname required}
 readonly RPC_PORT=31416
 
 readonly RPC_REQUEST=${2:-get_host_info} # default request
