@@ -9,4 +9,4 @@ Refresh: 3333
 
 _HTTP_
 
-exec ./boinc_cluster_state.xml
+exec ./boinc_cluster_state.xml 2>/dev/null
