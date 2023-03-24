@@ -6,7 +6,7 @@
 readonly DATABASE=boinc_cluster_state.db
 
 # get max seqno per node
-maxseqno=$( sqlite3 -noheader -tabs "$DATABASE" <<_SQL_
+maxseqno=$( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
 SELECT 
     h.hostname,
     ifnull(max(seqno), 0)
