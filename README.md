@@ -1,21 +1,20 @@
 HTML GUI for BOINC cluster.
 
 # Design
-1. Collect state from each cluster node
-	1. Execute `get_state` RPC to each cluster node, store result temporarily
-1. Assemble these states into one big XML document
-	1. See `boinc_cluster_state.xml`
-1. Serve this document to the client
-	1. See `boinc_cluster_state.cgi`
-1. Client transforms this XML data into HTML with a XSL transform (a.k.a stylesheet)
-	1. See `gui.xsl`
-1. Client also uses a CSS stylesheet to beautify the results. 
-	1. See `styles.css`
-	
+1. Collect state from each cluster node, store it into a SQL database
+	1. Hourly, execute `get_state` RPC to each cluster node — see `boinc_cluster_state.xml`
+	1. BOINC RPCs return XML; process this XML to SQL — see `sql.xsl`
+1. Browsers inspect cluster state at will, by requesting `boinc_cluster_state.cgi`
+	1. Calls `boinc_cluster_state.xml`
+1. Browser transforms this XML data into HTML — see `gui.xsl`
+1. Browser also uses a CSS stylesheet to beautify the results: `styles.css`
 
-# References
+# Dependencies
+1. SQLite 3
+1. `xsltproc` XSLT 1.0 processor
+1. HTTP server: I use `mini_httpd`, but I'm sure Apache could do
+1. `zsh` 
 
-See also
-- https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
+# See Also
+- https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol
 - https://developer.mozilla.org/en-US/docs/Web/EXSLT
-
