@@ -36,6 +36,9 @@ request()
 	if [[ get_messages = "$1" && "$2" ]]
 	then
 		rpc_param="<seqno>$2</seqno>"
+	elif [[ auth2 = "$1" ]]
+	then
+		rpc_param="<nonce_hash>$2</nonce_hash>"
 	fi
 	
 	print -u$RPC_SERVER "
@@ -47,7 +50,7 @@ request()
 ##############################################################################
 auth1()
 {
-	request '<auth1/>'
+	request auth1
 
 	read -u$RPC_SERVER line # should be "<boinc_gui_rpc_reply>"
 	debug "1-$line"
@@ -88,7 +91,7 @@ auth2()
 	nonce_hash=$( compute_hash "$nonce$RPC_PASSWORD" )
 	debug "nonce_hash=$nonce_hash"
 	
-	request "<auth2> <nonce_hash>$nonce_hash</nonce_hash> </auth2>"
+	request auth2 "$nonce_hash"
 		
 	read -u$RPC_SERVER line # should be "<boinc_gui_rpc_reply>"
 	debug "2-$line"
