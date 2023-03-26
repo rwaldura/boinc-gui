@@ -37,6 +37,7 @@ debug()
 readonly RPC_REQUEST=${1:-get_state}
 shift
 
+(( $# % 2 == 0 )) || { debug "invalid hashmap: $#" ; exit 1 }
 declare -A RPC_PARAMS
 readonly RPC_PARAMS=( $* )
 
@@ -76,12 +77,8 @@ _XML_
 for node in $NODES
 do
 	print "<boinc_client hostname=\"$node\">"
-	if [[ $DEBUG ]]
-	then 
-		print "including $TEMP-$node"
-	else
-		tr $RPC_ETX \\n <$TEMP-$node
-	fi
+	debug "including $TEMP-$node"
+	[[ "$DEBUG" ]] || tr $RPC_ETX \\n <$TEMP-$node
 	print "</boinc_client>"
 done 
 
@@ -89,4 +86,4 @@ print "</boinc_cluster_state>"
 
 ##############################################################################
 # cleanup
-rm $TEMP-*
+[[ $DEBUG ]] || rm $TEMP-*

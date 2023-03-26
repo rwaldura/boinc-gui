@@ -15,8 +15,9 @@ CREATE TABLE host (
 	os_name STRING,
 	os_version STRING,
 	product_name STRING,
-	p_mfpops INTEGER,	-- megaflops
-	p_miops INTEGER		-- megaflops
+	p_mfpops INTEGER,	-- mega-ops (*10^6), floating point
+	p_miops INTEGER,	-- mega-ops, integer
+	maxseqno INTEGER
 );
 
 -- ---------------------------------------------------------------------------

@@ -1,22 +1,41 @@
-#!/bin/sh
+#!/bin/zsh
 #
 # Get new messages only.
+# This requires us to interrogate the cluster, in case some nodes have
+# restarted. Nodes restart their seqno at 1, while we store the highest
+# sequence number in our database.
 #
 
 readonly DATABASE=boinc_cluster_state.db
 
+readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
+	<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
+		<x:output method="text" encoding="UTF-8" />
+		<x:template match="seqno">
+			UPDATE host SET maxseqno = <x:value-of select="." />
+			WHERE hostname=&apos;<x:value-of select="../../@hostname" />&apos; ;
+		</x:template>
+	</x:stylesheet>'
+
+# =(<<<$XSLT) is a "here string" with an actual file, rather than stdin
+./boinc_cluster_state.xml get_message_count |
+# cat t/_message_count.xml |
+	xsltproc =(<<<$XSLT) - |
+		sqlite3 "$DATABASE"
+
 # get max seqno per node
-maxseqno=$( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
-SELECT 
-    h.hostname,
-    ifnull(max(seqno), 0)
-FROM 
-    -- LEFT JOIN in case this is a new host that has no messages yet
-    host h LEFT JOIN message USING (host_cpid)
-GROUP BY 1
+seqno=$( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
+    SELECT 
+        h.hostname,
+        iif(max(seqno) IS NULL OR maxseqno < max(seqno), 0, max(seqno))
+    FROM 
+        -- LEFT JOIN in case this is a new host that has no messages yet
+        host h LEFT JOIN message USING (host_cpid)
+    GROUP BY 1
 _SQL_
 )
 
 # if database cannot be read, maxseqno is blank, and everything is fine:
 # we'll just get all messages for all nodes
-./boinc_cluster_state.xml get_messages $maxseqno
+./boinc_cluster_state.xml get_messages ${=seqno}
+
