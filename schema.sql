@@ -17,7 +17,7 @@ CREATE TABLE host (
 	product_name STRING,
 	p_mfpops INTEGER,	-- mega-ops (*10^6), floating point
 	p_miops INTEGER,	-- mega-ops, integer
-	maxseqno INTEGER
+	message_count INTEGER
 );
 
 -- ---------------------------------------------------------------------------

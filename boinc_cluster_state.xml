@@ -37,7 +37,6 @@ debug()
 readonly RPC_REQUEST=${1:-get_state}
 shift
 
-(( $# % 2 == 0 )) || { debug "invalid hashmap: $#" ; exit 1 }
 declare -A RPC_PARAMS
 readonly RPC_PARAMS=( $* )
 
