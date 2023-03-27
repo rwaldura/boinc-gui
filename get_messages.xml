@@ -29,7 +29,7 @@ readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
 seqno=$( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
 SELECT
     hostname, 
-    -- m.maxseqno, message_count, message_count < m.maxseqno,
+    -- m.maxseqno, message_count, iif(message_count < m.maxseqno, 'true', 'false') AS should_reset,
     CASE
         WHEN m.maxseqno IS NULL THEN 0 -- new node w/o any messages
         WHEN message_count IS NULL THEN m.maxseqno -- unclear: client failed to respond?

@@ -11,10 +11,10 @@ cd ~/boinc-gui
 	echo "dumped cluster state"
 
 ./get_messages.xml > $temp_messages && 
-	echo "dumped cluster messages"
+	echo "got latest messages"
 
 ./boinc_cluster_state.xml get_notices > $temp_notices && 
-	echo "dumped cluster notices"
+	echo "got cluster notices"
 
 # update SQL database
 xsltproc sql.xsl $temp_state $temp_messages $temp_notices | 
