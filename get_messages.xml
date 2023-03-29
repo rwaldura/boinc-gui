@@ -48,4 +48,4 @@ FROM -- outer join in case this is a new host with no messages yet
 _SQL_
 )
 
-./boinc_cluster_state.xml get_messages ${=seqno}
+exec ./boinc_cluster_state.xml get_messages ${=seqno}

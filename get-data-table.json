@@ -61,8 +61,8 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         COUNT(DISTINCT CASE WHEN project_name = 'Universe@Home'        THEN result.name END) AS univ
     FROM 
         result 
-		JOIN task USING (task_id)
-	    JOIN task_state ON active_task_state = task_state.code
+        JOIN task USING (task_id)
+        JOIN task_state ON active_task_state = task_state.code
     WHERE 
         datetime(created) >= datetime('now', '-28 day')
         AND task_state.name = 'PROCESS_EXECUTING'

@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
+	<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
+		<x:output method="text" encoding="UTF-8" />
+		<x:template match="projects">
+			<x:value-of select="../../@hostname" />
+			<x:text>	</x:text>
+			<x:value-of select="count(project)" />
+			<x:apply-templates />
+		</x:template>
+
+		<x:template match="project">
+			<x:value-of select="../../../@hostname" />
+			<x:text>	</x:text>
+			<x:value-of select="master_url" />
+			<x:text>	</x:text>
+			<x:value-of select="project_name" />
+		</x:template>
+	</x:stylesheet>'
+
+./boinc_cluster_state.xml get_project_status |
+	xsltproc =(<<<$XSLT) - | 
+		sort
