@@ -45,8 +45,8 @@ CREATE TABLE result (
 	app_version_mflops INTEGER,	-- megaflops
 	project_name STRING,
 	project_master_url STRING,
-	final_cpu_time DOUBLE,
-	final_elapsed_time DOUBLE, 
+	final_cpu_time DOUBLE,		-- seconds
+	final_elapsed_time DOUBLE,	-- seconds
 	exit_status INTEGER,
 	state INTEGER REFERENCES result_state(code),
 	report_deadline DATETIME,

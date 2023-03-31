@@ -4,6 +4,14 @@
 # Output a datatable in JSON. 
 # https://developers.google.com/chart/interactive/docs/reference#DataTable_toJSON
 #
+# Our intent is to compute an activity metric across all nodes of the
+# cluster. I want to know what my machines are doing.
+# The current method counts workunits in processing, see 
+# SQL_SELECT_PIVOT_PROJECT below. Pretty good for last-lasting workunits that
+# need over 1 day to complete. But this overestimates actual activity for
+# fast-completing workunits. They artificially inflate the activity metric.
+#
+# Something about task.current_cpu_time on a daily basis? 
 ##############################################################################
 
 readonly DATABASE=boinc_cluster_state.db
@@ -53,7 +61,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         strftime('%Y', created, 'localtime') as created_y,
         strftime('%m', created, 'localtime') as created_m,
         strftime('%d', created, 'localtime') as created_d,
-        -- order does not matter here
+        -- order does not matter below
         COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result.name END) AS yoyo,
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result.name END) AS wcg,
         COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result.name END) AS aster,
@@ -64,7 +72,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         JOIN task USING (task_id)
         JOIN task_state ON active_task_state = task_state.code
     WHERE 
-        datetime(created) >= datetime('now', '-28 day')
+        datetime(created) >= datetime('now', '-33 day')
         AND task_state.name = 'PROCESS_EXECUTING'
     GROUP BY 1, 2, 3"
 

@@ -84,7 +84,7 @@
 					/*************************************************************************
 					 * Retrieve JSON data for this time-based chart, then draw it.
 					 */
-					function loadTimeChartData(url = "get-data-table.cgi")
+					function loadTimeChartData(url = "cluster-activity.cgi")
 					{
 						const request = newDataTableRequest(updateChart /* func called once request completes */);
 						request.open("GET", url, true /* async */);
