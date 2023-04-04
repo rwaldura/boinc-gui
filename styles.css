@@ -116,16 +116,16 @@ body {
 }
 
 .progress-bar-bg {
-	border-radius: 8px;
+	border-radius: 4px;
 	width: 150px;
-	height: 12px;
+	height: 8px;
 	background-color: #e0e0e0;	
 }
 
 .progress-bar {
 	position: relative;
-	top: -12px;
-	border-radius: 8px;
-	height: 12px;
+	top: -8px;
+	border-radius: 4px;
+	height: 8px;
 	background-color: lightgreen;
 }
