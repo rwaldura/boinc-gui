@@ -8,4 +8,4 @@ _HTTP_
 # parse CGI parameters out of $QUERY_STRING and pass them along
 #...
 
-exec ./get-data-table.json 2>/dev/null
+exec ./cluster-activity.json 2>/dev/null

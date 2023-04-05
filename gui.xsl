@@ -131,7 +131,7 @@
 								pieHole: 0.4,
 							} );
 							
-						loadTimeChartData(); ("t/_data-table.json");
+						loadTimeChartData(); // ("t/_data-table.json");
 					} );					
 				</script>
 			</head>
