@@ -9,6 +9,7 @@
 #
 
 readonly DATABASE=boinc_cluster_state.db
+# readonly DATABASE=t/_test.db
 
 readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
 	<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
@@ -26,7 +27,7 @@ readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
 
 # get starting seqno per node
 # use zero if the sequence was reset (e.g. because the BOINC client restarted)
-seqno=$( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
+seqno=( $( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
 SELECT
     hostname, 
     -- m.maxseqno, message_count, iif(message_count < m.maxseqno, 'true', 'false') AS should_reset,
@@ -46,6 +47,6 @@ FROM -- outer join in case this is a new host with no messages yet
         GROUP BY 1
     ) m USING (host_cpid)
 _SQL_
-)
+) )
 
-exec ./boinc_cluster_state.xml get_messages ${=seqno}
+exec ./boinc_cluster_state.xml get_messages $seqno

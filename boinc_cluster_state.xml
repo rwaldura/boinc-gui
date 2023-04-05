@@ -41,21 +41,21 @@ declare -A RPC_PARAMS
 readonly RPC_PARAMS=( $* )
 
 debug "RPC request = " $RPC_REQUEST
-debug "RPC parameter map = " ${(kv)RPC_PARAMS}
+debug "RPC parameter keys = " ${(k)RPC_PARAMS}
 
 ##############################################################################
 # gather nodes
 if shuf </dev/null	# "shuf" is available
 then # shuffle nodes
-	NODES=( $( shuf --echo $BB_NODES $OTHER_NODES $DROID_NODES ) )
+	ALL_NODES=( $( shuf --echo $BB_NODES $OTHER_NODES $DROID_NODES ) )
 else
-	NODES=( $BB_NODES $OTHER_NODES $DROID_NODES )
+	ALL_NODES=( $BB_NODES $OTHER_NODES $DROID_NODES )
 fi
 
 ##############################################################################
 # get state for all cluster nodes;
 # each task executes concurrently
-for node in $NODES
+for node in $ALL_NODES
 do
 	rpc_param=$RPC_PARAMS[$node]
 	./boinc-gui-rpc.zsh $node $RPC_REQUEST $rpc_param >$TEMP-$node 2>$TEMP-$node.err &
@@ -73,7 +73,7 @@ cat <<_XML_
 <boinc_cluster_state created="$NOW">
 _XML_
 
-for node in $NODES
+for node in $ALL_NODES
 do
 	print "<boinc_client hostname=\"$node\">"
 	debug "including $TEMP-$node"
@@ -85,4 +85,4 @@ print "</boinc_cluster_state>"
 
 ##############################################################################
 # cleanup
-[[ $DEBUG ]] || rm $TEMP-*
+[[ "$DEBUG" ]] || rm $TEMP-*
