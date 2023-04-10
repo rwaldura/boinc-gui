@@ -14,7 +14,7 @@
 
 ##############################################################################
 readonly BB_NODES=( bb{10,15,30,34,37,47,43,55} )
-readonly OTHER_NODES=( beaglebone230 beaglebone369 ) # beaglebone680 )
+readonly OTHER_NODES=( beaglebone230 ) # beaglebone369 beaglebone680 )
 readonly DROID_NODES=( 10.10.10.{24,28,38,39,46,51} )
 
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
