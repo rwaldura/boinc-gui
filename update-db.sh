@@ -7,7 +7,7 @@ temp_notices=$temp-notices.xml
 
 cd ~/boinc-gui
 
-./boinc_cluster_state.xml > $temp_state && 
+./boinc_cluster_state.xml get_state > $temp_state && 
 	echo "dumped cluster state"
 
 ./get_messages.xml > $temp_messages && 
