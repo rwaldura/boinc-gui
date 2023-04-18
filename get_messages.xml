@@ -13,7 +13,7 @@ readonly DATABASE=boinc_cluster_state.db
 
 ./boinc_cluster_state.xml get_message_count |
 # cat t/_message_count.xml |
-	xsltproc =(<<_XSL_ # this is a "heredoc" with an actual file, rather than stdin
+	xsltproc <( <<_XSL_ # this is a "heredoc" with an actual file, rather than stdin
 <?xml version='1.0' encoding='UTF-8'?>
 <x:stylesheet xmlns:x='http://www.w3.org/1999/XSL/Transform' version='1.0'>
 	<x:output method='text' encoding='UTF-8' />
@@ -28,6 +28,13 @@ _XSL_
 # get starting seqno per node
 # use zero if the sequence was reset (e.g. because the BOINC client restarted)
 seqno=( $( sqlite3 -noheader -list -separator ' ' $DATABASE <<_SQL_
+WITH m AS (
+    SELECT -- pick the highest seqno of the latest messages, for each host
+        host_cpid, max(seqno) AS maxseqno
+    FROM -- pick the latest messages, for each host
+        ( SELECT host_cpid, max(created) AS created FROM message GROUP BY 1 )
+        JOIN message USING (host_cpid, created)
+    GROUP BY 1 ) 
 SELECT
     hostname, 
     -- m.maxseqno, message_count, iif(message_count < m.maxseqno, 'true', 'false') AS should_reset,
@@ -37,15 +44,8 @@ SELECT
         WHEN message_count < m.maxseqno THEN 0 -- client restarted, sequence reset 
         ELSE m.maxseqno -- normal case
     END AS seqno
-FROM -- outer join in case this is a new host with no messages yet
-    host LEFT OUTER JOIN (
-        SELECT -- pick the highest seqno of the latest messages, for each host
-            host_cpid, max(seqno) AS maxseqno
-        FROM -- pick the latest messages, for each host
-            ( SELECT host_cpid, max(created) AS created FROM message GROUP BY 1 )
-            JOIN message USING (host_cpid, created)
-        GROUP BY 1
-    ) m USING (host_cpid)
+FROM -- outer join, in case this is a new host with no messages yet
+    host LEFT OUTER JOIN m USING (host_cpid)
 _SQL_
 ) )
 
