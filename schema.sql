@@ -36,7 +36,7 @@ CREATE TABLE task (
 CREATE TABLE result (
 	name STRING NOT NULL,
 	host_cpid STRING NOT NULL REFERENCES host(host_cpid),
-	created DATETIME,
+	created DATETIME,			-- the time we "saw" this result, i.e. every hour
 	wu_name STRING,
 	wu_rsc_mfpops_est INTEGER,	-- megaflops
 	app_name STRING,

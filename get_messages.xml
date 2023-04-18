@@ -11,23 +11,23 @@
 readonly DATABASE=boinc_cluster_state.db
 # readonly DATABASE=t/_test.db
 
-readonly XSLT='<?xml version="1.0" encoding="UTF-8"?>
-	<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
-		<x:output method="text" encoding="UTF-8" />
-		<x:template match="seqno">
-			UPDATE host SET message_count = <x:value-of select="." />
-			WHERE hostname=&apos;<x:value-of select="../../@hostname" />&apos; ;
-		</x:template>
-	</x:stylesheet>'
-
 ./boinc_cluster_state.xml get_message_count |
 # cat t/_message_count.xml |
-	xsltproc =(<<<$XSLT) - | # this is a "here string" with an actual file, rather than stdin
-		sqlite3 "$DATABASE"
-
+	xsltproc =(<<_XSL_ # this is a "heredoc" with an actual file, rather than stdin
+<?xml version='1.0' encoding='UTF-8'?>
+<x:stylesheet xmlns:x='http://www.w3.org/1999/XSL/Transform' version='1.0'>
+	<x:output method='text' encoding='UTF-8' />
+	<x:template match='seqno'>
+		UPDATE host SET message_count = <x:value-of select='.' />
+		WHERE hostname = &apos;<x:value-of select='../../@hostname' />&apos; ;
+	</x:template>
+</x:stylesheet>
+_XSL_
+		) - | sqlite3 "$DATABASE"
+		
 # get starting seqno per node
 # use zero if the sequence was reset (e.g. because the BOINC client restarted)
-seqno=( $( sqlite3 -noheader -list -separator ' ' "$DATABASE" <<_SQL_
+seqno=( $( sqlite3 -noheader -list -separator ' ' $DATABASE <<_SQL_
 SELECT
     hostname, 
     -- m.maxseqno, message_count, iif(message_count < m.maxseqno, 'true', 'false') AS should_reset,
