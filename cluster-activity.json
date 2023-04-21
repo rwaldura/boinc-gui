@@ -72,7 +72,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         JOIN task USING (task_id)
         JOIN task_state ON active_task_state = task_state.code
     WHERE 
-        datetime(created) >= datetime('now', '-33 day')
+        datetime(created) >= datetime('now', '-55 day')
         AND task_state.name = 'PROCESS_EXECUTING'
     GROUP BY 1, 2, 3"
 

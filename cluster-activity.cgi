@@ -2,6 +2,7 @@
 
 cat << _HTTP_
 Content-type: application/json; charset=UTF-8
+Access-Control-Allow-Origin: *
 
 _HTTP_
 
