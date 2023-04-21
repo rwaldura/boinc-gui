@@ -72,6 +72,7 @@ FROM
     message m
 WHERE 
     datetime(created) >= datetime('now', '-33 day')
+    AND hostname = '10.10.10.39'
 GROUP BY 2
 ORDER BY 1 DESC
 LIMIT 10;

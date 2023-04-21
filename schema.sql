@@ -5,54 +5,54 @@
 -- ---------------------------------------------------------------------------
 -- host details
 CREATE TABLE host (
-	host_cpid STRING PRIMARY KEY,
-	updated DATETIME,
-	domain_name STRING,	-- the name self-reported by the BOINC client
-	hostname STRING,	-- how we actually reached the client, could be an IP address
-	p_ncpus INTEGER,
-	p_vendor STRING,
-	p_model STRING,
-	os_name STRING,
-	os_version STRING,
-	product_name STRING,
-	p_mfpops INTEGER,	-- mega-ops (*10^6), floating point
-	p_miops INTEGER,	-- mega-ops, integer
-	message_count INTEGER
+    host_cpid STRING PRIMARY KEY,
+    updated DATETIME,
+    domain_name STRING, -- the name self-reported by the BOINC client
+    hostname STRING,    -- how we actually reached the client, could be an IP address
+    p_ncpus INTEGER,
+    p_vendor STRING,
+    p_model STRING,
+    os_name STRING,
+    os_version STRING,
+    product_name STRING,
+    p_mfpops INTEGER,   -- mega-ops (*10^6), floating point
+    p_miops INTEGER,    -- mega-ops, integer
+    message_count INTEGER
 );
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE task (
-	task_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	fraction_done DOUBLE,
-	active_task_state INTEGER REFERENCES task_state(code),
-	scheduler_state INTEGER REFERENCES scheduler_state(code),
-	current_cpu_time DOUBLE,
-	elapsed_time DOUBLE,
-	progress_rate DOUBLE
+    task_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fraction_done DOUBLE,
+    active_task_state INTEGER REFERENCES task_state(code),
+    scheduler_state INTEGER REFERENCES scheduler_state(code),
+    current_cpu_time DOUBLE,
+    elapsed_time DOUBLE,
+    progress_rate DOUBLE
 );
 
 -- ---------------------------------------------------------------------------
 -- computational state
 CREATE TABLE result (
-	name STRING NOT NULL,
-	host_cpid STRING NOT NULL REFERENCES host(host_cpid),
-	created DATETIME,			-- the time we "saw" this result, i.e. every hour
-	wu_name STRING,
-	wu_rsc_mfpops_est INTEGER,	-- megaflops
-	app_name STRING,
-	app_user_friendly_name STRING,
-	app_version_num INTEGER,
-	app_version_mflops INTEGER,	-- megaflops
-	project_name STRING,
-	project_master_url STRING,
-	final_cpu_time DOUBLE,		-- seconds
-	final_elapsed_time DOUBLE,	-- seconds
-	exit_status INTEGER,
-	state INTEGER REFERENCES result_state(code),
-	report_deadline DATETIME,
-	received DATETIME,
-	estimated_cpu_time_remaining DOUBLE,
-	task_id INTEGER REFERENCES task(task_id)
+    name STRING NOT NULL,
+    host_cpid STRING NOT NULL REFERENCES host(host_cpid),
+    created DATETIME,           -- the time we "saw" this result, i.e. every hour
+    wu_name STRING,
+    wu_rsc_mfpops_est INTEGER,  -- megaflops
+    app_name STRING,
+    app_user_friendly_name STRING,
+    app_version_num INTEGER,
+    app_version_mflops INTEGER, -- megaflops
+    project_name STRING,
+    project_master_url STRING,
+    final_cpu_time DOUBLE,      -- seconds
+    final_elapsed_time DOUBLE,  -- seconds
+    exit_status INTEGER,
+    state INTEGER REFERENCES result_state(code),
+    report_deadline DATETIME,
+    received DATETIME,
+    estimated_cpu_time_remaining DOUBLE,
+    task_id INTEGER REFERENCES task(task_id)
 );
 
 CREATE INDEX result_created ON result(created);
@@ -61,86 +61,82 @@ CREATE INDEX result_created_datetime ON result(datetime(created));
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE message (
-	updated DATETIME,
-	created DATETIME,
-	project_name STRING,
-	body STRING,
-	pri INTEGER, 
-	seqno INTEGER,		-- resets upon client restart
-	hostname STRING,	-- how we actually reached the client, could be an IP address
-	host_cpid STRING REFERENCES host(host_cpid)
+    updated DATETIME,
+    created DATETIME,
+    project_name STRING,
+    body STRING,
+    pri INTEGER, 
+    seqno INTEGER,      -- resets upon client restart
+    hostname STRING,    -- how we actually reached the client, could be an IP address
+    host_cpid STRING REFERENCES host(host_cpid)
 );
 
 CREATE UNIQUE INDEX message_unique ON message(host_cpid, created, seqno);
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE notice (
-	updated DATETIME,
-	created DATETIME,
-	arrived DATETIME,
-	title STRING,
-	description STRING,	 
-	is_private BOOLEAN,
-	project_name STRING,
-	category STRING,
-	link STRING,
-	seqno INTEGER,
-	hostname STRING,	-- how we actually reached the client, could be an IP address
-	host_cpid STRING REFERENCES host(host_cpid)
+    updated DATETIME,
+    created DATETIME,
+    arrived DATETIME,
+    title STRING,
+    description STRING,  
+    is_private BOOLEAN,
+    project_name STRING,
+    category STRING,
+    link STRING,
+    seqno INTEGER,
+    hostname STRING,    -- how we actually reached the client, could be an IP address
+    host_cpid STRING REFERENCES host(host_cpid)
 );
 
 CREATE UNIQUE INDEX notice_unique ON notice(host_cpid, created, seqno);
 
 -- ---------------------------------------------------------------------------
 -- convenient join between tables above
-DROP VIEW IF EXISTS cluster_state;
-CREATE VIEW cluster_state AS
-	SELECT 
-		datetime(r.created, 'localtime') AS created,
-		round(100 * t.fraction_done) AS '%done',
-		app_name || '-' || app_version_num AS app,
-		domain_name
-	FROM 
-		result r 
-		JOIN host h USING (host_cpid) 
-		LEFT JOIN task t USING (task_id)
-	ORDER BY 
-		1 DESC, domain_name;
-
- -- view latest result
 DROP VIEW IF EXISTS instant_cluster_state;
 CREATE VIEW instant_cluster_state AS
-	SELECT * FROM cluster_state 
-	WHERE created = datetime((SELECT max(created) FROM result), 'localtime');
-	
+    SELECT 
+	    app_name,
+	    domain_name,
+        round(100 * t.fraction_done) AS '%done',
+        datetime(r.created, 'localtime') AS updated
+    FROM 
+        result r 
+        JOIN host h USING (host_cpid) 
+        LEFT JOIN task t USING (task_id)
+    WHERE
+        r.created = (SELECT max(created) FROM result)
+        AND active_task_state = 1
+    ORDER BY
+        app_name, domain_name;
+
 -- simplified view of hosts 
 DROP VIEW IF EXISTS hosts;
 CREATE VIEW hosts AS 
-	select domain_name, hostname, product_name, p_ncpus, p_mfpops + p_miops as mops
-	from host 
-	order by 1;
-
+    select domain_name, hostname, product_name, p_ncpus, p_mfpops, p_miops
+    from host 
+    order by 1;
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE result_state (
-	code INTEGER PRIMARY KEY,
-	shortname STRING,
-	name STRING,
-	description STRING
+    code INTEGER PRIMARY KEY,
+    shortname STRING,
+    name STRING,
+    description STRING
 );
 
 CREATE TABLE task_state (
-	code INTEGER PRIMARY KEY,
-	shortname STRING,
-	name STRING,
-	description STRING
+    code INTEGER PRIMARY KEY,
+    shortname STRING,
+    name STRING,
+    description STRING
 );
 
 CREATE TABLE scheduler_state (
-	code INTEGER PRIMARY KEY,
-	shortname STRING,
-	name STRING,
-	description STRING
+    code INTEGER PRIMARY KEY,
+    shortname STRING,
+    name STRING,
+    description STRING
 );
 
 -- https://github.com/BOINC/boinc/blob/master/lib/common_defs.h
