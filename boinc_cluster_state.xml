@@ -21,9 +21,6 @@ readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
 readonly TEMP=/tmp/boinc_cluster_state-$$
 
-# the client will use this stylesheet to transform the result
-readonly XSLT=gui.xsl
-
 readonly NOW=$( date -Iseconds )
 
 ##############################################################################
@@ -66,9 +63,8 @@ wait # for all tasks to finish
 
 ##############################################################################
 # gather all output into one big XML doc
-cat <<_XML_
+<<_XML_
 <?xml version="1.0" encoding="UTF-8" ?>
-<?xml-stylesheet href="$XSLT" type="text/xsl" ?>
 
 <boinc_cluster_state created="$NOW">
 _XML_
