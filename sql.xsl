@@ -30,7 +30,8 @@
 			os_version,
 			product_name,
 			p_mfpops,
-			p_miops
+			p_miops,
+			p_features
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@created" />' ,
 			'<x:value-of select="host_cpid" />' ,
@@ -43,7 +44,8 @@
 			'<x:value-of select="os_version" />' ,
 			'<x:value-of select="product_name" />' ,
 			<x:value-of select="round(p_fpops div 1000000)" /> ,
-			<x:value-of select="round( p_iops div 1000000)" />
+			<x:value-of select="round( p_iops div 1000000)" /> ,
+			'<x:value-of select="p_features" />'
 		);
 	</x:template>	
 
