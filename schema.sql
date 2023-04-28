@@ -117,18 +117,31 @@ CREATE VIEW hosts AS
     SELECT 
         domain_name, 
         hostname, 
+        -- e.g. os_version = "3.4.0-gcf10b7e (Android 6.0.1)"
+        CASE WHEN instr(os_version, " (Android ") > 0 THEN
+            substr(os_version, 
+                instr(os_version, " (Android ") + length(" (Android "), -- starting point
+                instr(os_version, ")") - instr(os_version, " (Android ") - length(" (Android ")) -- how many characters to include
+        ELSE NULL
+        END AS Android_version,
+        -- e.g. product_name = "LGE Nexus 5 - SDK: 23 ABI: armeabi-v7a"
         CASE WHEN instr(product_name, " - SDK: ") > 0 THEN
-            substr(product_name, 1, instr(product_name, " - SDK: "))
+            substr(product_name, 
+                1, -- starting point
+                instr(product_name, " - SDK: "))
         ELSE product_name
         END AS product_name,
         CASE WHEN instr(product_name, " SDK: ") > 0 THEN
-            substr(product_name, instr(product_name, " SDK: ") + length(" SDK: "), 2)
+            substr(product_name, 
+                instr(product_name, " SDK: ") + length(" SDK: "), 
+                2) -- how many characters to include
         ELSE NULL
         END AS Android_SDK,
         CASE WHEN instr(product_name, " ABI: ") > 0 THEN
-            substr(product_name, instr(product_name, " ABI: ") + length(" ABI: "))
+            substr(product_name, 
+                instr(product_name, " ABI: ") + length(" ABI: ")) -- where to start
         ELSE NULL
-        END AS Android_ABI,
+        END AS Android_ABI,     
         p_ncpus, 
         p_mfpops, 
         p_miops
