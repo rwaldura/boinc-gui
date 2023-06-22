@@ -5,6 +5,8 @@
 # Therefore, the XML database must be writable by 
 # "others" -- chmod o+w.
 #
+# See also https://docs.basex.org/wiki/Command-Line_Options#Standalone
+#
 
 readonly BASEX_HOME=/home/debian/basex
 

@@ -57,6 +57,7 @@ CREATE TABLE result (
 );
 
 CREATE INDEX result_created ON result(created);
+CREATE INDEX result_created_host ON result(host_cpid, created);
 CREATE INDEX result_created_date ON result(date(created));
 CREATE INDEX result_created_datetime ON result(datetime(created));
 

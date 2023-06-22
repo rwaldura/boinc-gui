@@ -6,12 +6,14 @@
 #
 # Our intent is to compute an activity metric across all nodes of the
 # cluster. I want to know what my machines are doing.
-# The current method counts workunits in processing, see 
-# SQL_SELECT_PIVOT_PROJECT below. Pretty good for last-lasting workunits that
+# The current method counts workunits in processing, on a daily basis.
+# See SQL_SELECT_PIVOT_PROJECT below. 
+# Pretty good for last-lasting workunits that
 # need over 1 day to complete. But this overestimates actual activity for
 # fast-completing workunits. They artificially inflate the activity metric.
 #
 # Something about task.current_cpu_time on a daily basis? 
+# Or do the counts hourly, them sum up by day?
 ##############################################################################
 
 readonly DATABASE=boinc_cluster_state.db
@@ -64,8 +66,8 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         -- order does not matter below
         COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result.name END) AS yoyo,
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result.name END) AS wcg,
-        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result.name END) AS aster,
-        COUNT(DISTINCT CASE WHEN project_name = 'Rosetta@home'         THEN result.name END) AS roset,
+        COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result.name END) AS astr,
+        COUNT(DISTINCT CASE WHEN project_name = 'Rosetta@home'         THEN result.name END) AS rose,
         COUNT(DISTINCT CASE WHEN project_name = 'Universe@Home'        THEN result.name END) AS univ
     FROM 
         result 
@@ -74,7 +76,8 @@ readonly SQL_SELECT_PIVOT_PROJECT="
     WHERE 
         datetime(created) >= datetime('now', '-55 day')
         AND task_state.name = 'PROCESS_EXECUTING'
-    GROUP BY 1, 2, 3"
+    GROUP BY 1, 2, 3
+"
 
 readonly SQL_SELECT_JSON="
     SELECT 
@@ -83,13 +86,14 @@ readonly SQL_SELECT_JSON="
 				-- dumbass JSON dates use 0-based months
                 json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
                 -- order must match COLUMN_DEFS above
-                json_object('v', aster),
-                json_object('v', roset),
+                json_object('v', astr),
+                json_object('v', rose),
                 json_object('v', univ),
                 json_object('v', wcg),
                 json_object('v', yoyo)
                 ))
-    FROM ( $SQL_SELECT_PIVOT_PROJECT )"
+    FROM ( $SQL_SELECT_PIVOT_PROJECT )
+"
 
 ##############################################################################
 # main
