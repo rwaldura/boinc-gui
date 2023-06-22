@@ -46,7 +46,7 @@ FROM -- outer join, in case this is a new host with no messages yet
 
 ./boinc_cluster_state.xml get_message_count |
 # cat t/_message_count.xml |
-	xsltproc =(<<<$XSLT) - | # this is a "here string" as an actual file, rather than stdin
+	xsltproc <( <<<$XSLT ) - | # this is a "here string" as an actual file, rather than stdin
 		sqlite3 "$DATABASE"
 		
 seqno=( $( sqlite3 -noheader -list -separator ' ' $DATABASE $SQL ) )
