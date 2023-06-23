@@ -1,9 +1,11 @@
 #!/bin/sh
 
-temp=/tmp/boinc-gui-$$
-temp_state=$temp-state.xml
-temp_messages=$temp-messages.xml
-temp_notices=$temp-notices.xml
+readonly temp=/tmp/boinc-gui-$$
+readonly temp_state=$temp-state.xml
+readonly temp_messages=$temp-messages.xml
+readonly temp_notices=$temp-notices.xml
+
+readonly latest_state=/tmp/boinc_cluster_state.xml
 
 cd ~/boinc-gui
 
@@ -24,5 +26,9 @@ xsltproc sql.xsl $temp_state $temp_messages $temp_notices |
 # update XML database
 basex -c "open boinc; add $temp_state" &&
 	echo "updated XML database"
+
+# keep around the latest state: used by Web GUI
+rm $latest_state
+ln $temp_state $latest_state
 
 rm $temp_state $temp_messages $temp_notices
