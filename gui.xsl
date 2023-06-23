@@ -8,6 +8,9 @@
 	https://developer.mozilla.org/en-US/docs/Web/EXSLT
 	https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
   -->
+
+<!DOCTYPE x:stylesheet [ <!ENTITY nbsp "&#160;"> ]>
+
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
 	version="1.0">
@@ -145,6 +148,12 @@
 				</div>
 				<div id="bot_left">
 					<div class="chart_title">Past Cluster Activity</div>
+					<div class="cluster_activity_timespan">
+						<span onclick="loadTimeChartData('cluster-activity.cgi?10')">1W</span>
+						<span onclick="loadTimeChartData('cluster-activity.cgi?33')">1M</span>
+						<span onclick="loadTimeChartData('cluster-activity.cgi?99')">3M</span>
+						<span onclick="loadTimeChartData('cluster-activity.cgi?200')">6M</span>
+					</div>
 					<div id="time_chart_div">
 						<p><i>loading...</i></p>
 					</div> 
