@@ -16,6 +16,9 @@
 # Or do the counts hourly, them sum up by day?
 ##############################################################################
 
+# input parameter
+readonly LOOKBACK_DAYS=${1:-0} # default value
+
 readonly DATABASE=boinc_cluster_state.db
 #readonly DATABASE=t/_test.db # for testing
 #readonly DATABASE=t.db
@@ -74,7 +77,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         JOIN task USING (task_id)
         JOIN task_state ON active_task_state = task_state.code
     WHERE 
-        datetime(created) >= datetime('now', '-55 day')
+        datetime(created) >= datetime('now', '-$LOOKBACK_DAYS day')
         AND task_state.name = 'PROCESS_EXECUTING'
     GROUP BY 1, 2, 3
 "
