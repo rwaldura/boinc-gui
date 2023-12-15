@@ -14,6 +14,7 @@ readonly XSLT=gui.xsl
 # Refresh the page every hour or so
 cat <<_HTTP_
 Content-Type: text/xml; charset=UTF-8
+Access-Control-Allow-Origin: *
 Refresh: 3333
 
 <?xml version="1.0" encoding="UTF-8" ?>
