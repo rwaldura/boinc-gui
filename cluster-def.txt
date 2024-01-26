@@ -1,0 +1,37 @@
+#
+# This file is a list of hostnames, or IP addresses, one per line.
+# It defines how to reach the machines that run the BOINC client.
+# I call them "nodes" that together make up the "BOINC cluster".
+#
+# This file is ingested by boinc_cluster_state.xml.
+# Lines starting with "#" are ignored.
+#
+
+# beaglebone nodes
+bb10
+bb15
+bb30
+bb34
+bb37
+bb43
+bb47
+bb55
+
+# monitor nodes
+beaglebone230
+beaglebone369
+#beaglebone680
+
+# Android nodes 
+droid40
+droid45
+10.10.10.24
+10.10.10.28
+10.10.10.34
+10.10.10.38
+10.10.10.39
+10.10.10.40
+10.10.10.46
+10.10.10.51
+10.10.10.55
+10.10.10.56

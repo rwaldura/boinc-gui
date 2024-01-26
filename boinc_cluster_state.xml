@@ -9,9 +9,7 @@
 #
 
 ##############################################################################
-readonly BB_NODES=( bb{10,15,30,34,37,47,43,55} )
-readonly OTHER_NODES=( beaglebone230 beaglebone369 ) # beaglebone680 )
-readonly DROID_NODES=( 10.10.10.{24,28,34,38,39,40,46,51,55,56} droid{40,45} )
+readonly CLUSTER_DEF=cluster-def.txt
 
 readonly RPC_ETX=\\003 # control character used by BOINC GUI RPC
 
@@ -40,15 +38,15 @@ debug "RPC parameter keys = " ${(k)RPC_PARAMS}
 # gather nodes
 if shuf </dev/null	# "shuf" is available
 then # shuffle nodes
-	ALL_NODES=( $( shuf --echo $BB_NODES $OTHER_NODES $DROID_NODES ) )
+	CLUSTER_NODES=( $( grep -v '^#' $CLUSTER_DEF | shuf ) )
 else
-	ALL_NODES=( $BB_NODES $OTHER_NODES $DROID_NODES )
+	CLUSTER_NODES=( $( grep -v '^#' $CLUSTER_DEF ) )	
 fi
 
 ##############################################################################
 # get state for all cluster nodes;
 # each task executes concurrently
-for node in $ALL_NODES
+for node in $CLUSTER_NODES
 do
 	rpc_param=$RPC_PARAMS[$node]
 	./boinc-gui-rpc.zsh $node $RPC_REQUEST $rpc_param >$TEMP-$node 2>$TEMP-$node.err &
@@ -65,7 +63,7 @@ wait # for all tasks to finish
 <boinc_cluster_state created="$NOW">
 _XML_
 
-for node in $ALL_NODES
+for node in $CLUSTER_NODES
 do
 	print "<boinc_client hostname=\"$node\">"
 	debug "including $TEMP-$node"
