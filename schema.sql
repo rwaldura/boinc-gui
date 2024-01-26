@@ -52,6 +52,8 @@ CREATE TABLE result (
     state INTEGER REFERENCES result_state(code),
     report_deadline DATETIME,
     received DATETIME,
+    completed DATETIME,
+    reported DATETIME,
     estimated_cpu_time_remaining DOUBLE,
     task_id INTEGER REFERENCES task(task_id)
 );
@@ -60,6 +62,7 @@ CREATE INDEX result_created ON result(created);
 CREATE INDEX result_created_host ON result(host_cpid, created);
 CREATE INDEX result_created_date ON result(date(created));
 CREATE INDEX result_created_datetime ON result(datetime(created));
+CREATE INDEX result_name ON result(name);
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE message (

@@ -128,6 +128,35 @@
 		);
 	</x:template>	
 
+	<!-- completed results -->
+	<x:template match="old_result">
+		INSERT INTO result (
+			created,
+			host_cpid,
+			wu_name,
+			project_master_url,
+			name,
+			app_name,
+			exit_status,
+			final_elapsed_time, 
+			final_cpu_time,
+			completed,
+			reported
+		) VALUES (
+			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />') ,
+			(SELECT DISTINCT wu_name FROM result WHERE name = '<x:value-of select="result_name" />') ,
+			'<x:value-of select="project_url" />' ,
+			'<x:value-of select="result_name" />' ,
+			'<x:value-of select="app_name" />' ,
+			<x:value-of select="exit_status" /> ,
+			<x:value-of select="elapsed_time" /> ,
+			<x:value-of select="cpu_time" /> ,
+			datetime(<x:value-of select="completed_time" />, 'unixepoch') ,
+			datetime(<x:value-of select="create_time" />, 'unixepoch')
+		);
+	</x:template>	
+
 	<x:variable name="apos">&apos;</x:variable>
 	<x:variable name="dapos">&apos;&apos;</x:variable>
 	<x:variable name="quot">&quot;</x:variable>
