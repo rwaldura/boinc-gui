@@ -63,9 +63,9 @@ readonly COLUMN_DEFS='
 # Pro: it's super fast
 readonly SQL_SELECT_PIVOT_PROJECT="
     SELECT 
-        strftime('%Y', created, 'localtime') as created_y,
-        strftime('%m', created, 'localtime') as created_m,
-        strftime('%d', created, 'localtime') as created_d,
+        strftime('%Y', captured, 'localtime') as created_y,
+        strftime('%m', captured, 'localtime') as created_m,
+        strftime('%d', captured, 'localtime') as created_d,
         -- order does not matter below
         COUNT(DISTINCT CASE WHEN project_name = 'yoyo@home'            THEN result.name END) AS yoyo,
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result.name END) AS wcg,
@@ -77,7 +77,7 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         JOIN task USING (task_id)
         JOIN task_state ON active_task_state = task_state.code
     WHERE 
-        datetime(created) >= datetime('now', '-$LOOKBACK_DAYS day')
+        datetime(captured) >= datetime('now', '-$LOOKBACK_DAYS day')
         AND task_state.name = 'PROCESS_EXECUTING'
     GROUP BY 1, 2, 3
 "
@@ -110,50 +110,3 @@ cat <<_JSON_
 	"rows": [ $rows $NULL_ROW ]
 }
 _JSON_
-
-exit 0
-
-##############################################################################
-# unused
-
-readonly SQL_SELECT_GROUPED="
-    SELECT 
-        date(created, 'localtime') AS day,
-        app_name,
-        app_user_friendly_name, 
-        project_name,
-        app_user_friendly_name || ' (' || project_name || ')' AS app_project_name,
-        COUNT(DISTINCT result_name) AS active_tasks
-    FROM 
-        result1
-    WHERE 
-        datetime(created) >= datetime('now', '-7 day')
-    GROUP BY 1, 2, 3, 4, 5"
-
-readonly SQL_SELECT_PIVOT_APPS="
-    -- SELECT load_extension('pivot_vtab');
-	DROP TABLE IF EXISTS apps_pivot;
-    CREATE VIRTUAL TABLE apps_pivot USING pivot_vtab (
-        -- rows
-        ( SELECT DISTINCT date(created, 'localtime') AS day from result1 ),
-        -- columns
-        ( SELECT DISTINCT app_name, app_user_friendly_name || ' (' || project_name || ')' FROM result1 ORDER BY 1 ),
-        -- cell values
-        ( SELECT COUNT(DISTINCT result_name) AS active_tasks 
-          FROM result1 WHERE ?1 = date(created, 'localtime') AND ?2 = app_name )
-    );
-	SELECT * FROM apps_pivot"
-# Issues with this: it's super slow, as it runs a query for each cell.
-# It really needs an index to run reasonably fast. Unfortunately the index I want is not supported:
-# create index i1 result1(date(created, 'localtime'));
-# See https://www.sqlite.org/deterministic.html
-# What I can have is:
-# create index i1 result1(date(created));
-# but this means my days are slightly off: they are aligned to UTC time, not local.
-# Also, annoying but acceptable: the table needs to be re-created everytime, to
-# take into account any new apps.
-# See also https://github.com/jakethaw/pivot_vtab/issues/7
-
-
-
-

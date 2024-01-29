@@ -37,7 +37,7 @@ CREATE TABLE task (
 CREATE TABLE result (
     name STRING NOT NULL,
     host_cpid STRING NOT NULL REFERENCES host(host_cpid),
-    created DATETIME,           -- the time we "saw" this result, i.e. every hour
+    captured DATETIME,           -- the time we "captured" this result, i.e. every hour
     wu_name STRING,
     wu_rsc_mfpops_est INTEGER,  -- megaflops
     app_name STRING,
@@ -58,10 +58,10 @@ CREATE TABLE result (
     task_id INTEGER REFERENCES task(task_id)
 );
 
-CREATE INDEX result_created ON result(created);
-CREATE INDEX result_created_host ON result(host_cpid, created);
-CREATE INDEX result_created_date ON result(date(created));
-CREATE INDEX result_created_datetime ON result(datetime(created));
+CREATE INDEX result_created ON result(captured);
+CREATE INDEX result_created_host ON result(host_cpid, captured);
+CREATE INDEX result_created_date ON result(date(captured));
+CREATE INDEX result_created_datetime ON result(datetime(captured));
 CREATE INDEX result_name ON result(name);
 
 -- ---------------------------------------------------------------------------

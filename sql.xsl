@@ -33,7 +33,7 @@
 			p_miops,
 			p_features
 		) VALUES (
-			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
 			'<x:value-of select="host_cpid" />' ,
 			'<x:value-of select="domain_name" />' ,
 			'<x:value-of select="../../../@hostname" />', <!-- attribute of "boinc_client" element -->		
@@ -83,7 +83,7 @@
 		</x:if>
 		
 		INSERT INTO result (
-			created,
+			captured,
 			name,
 			wu_name,
 			wu_rsc_mfpops_est,
@@ -103,7 +103,7 @@
 			estimated_cpu_time_remaining,
 			task_id
 		) VALUES (
-			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
 			'<x:value-of select="name" />' ,
 			'<x:value-of select="wu_name" />' ,
 			<x:value-of select="round($workunit/rsc_fpops_est div 1000000)" />,
@@ -131,7 +131,7 @@
 	<!-- completed results -->
 	<x:template match="old_result">
 		INSERT INTO result (
-			created,
+			captured,
 			host_cpid,
 			wu_name,
 			project_master_url,
@@ -143,7 +143,7 @@
 			completed,
 			reported
 		) VALUES (
-			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
 			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />') ,
 			(SELECT DISTINCT wu_name FROM result WHERE name = '<x:value-of select="result_name" />') ,
 			'<x:value-of select="project_url" />' ,
@@ -176,7 +176,7 @@
 			hostname,
 			host_cpid
 		) VALUES (
-			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
 			'<x:value-of select="title" />' ,
 			'<x:value-of select="str:replace(description, $apos, $dapos)" />' ,
 			datetime(<x:value-of select="create_time" />, 'unixepoch') ,
@@ -205,7 +205,7 @@
 			hostname,
 			host_cpid
 		) VALUES (
-			'<x:value-of select="/boinc_cluster_state/@created" />' ,
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
 			datetime(<x:value-of select="time" />, 'unixepoch') ,
 			'<x:value-of select="project" />' ,
 			'<x:value-of select="str:replace(body, $apos, $dapos)" />' ,

@@ -60,7 +60,7 @@ wait # for all tasks to finish
 <<_XML_
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<boinc_cluster_state created="$NOW">
+<boinc_cluster_state captured="$NOW">
 _XML_
 
 for node in $CLUSTER_NODES
