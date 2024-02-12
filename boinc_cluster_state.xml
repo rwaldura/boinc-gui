@@ -36,12 +36,14 @@ debug "RPC parameter keys = " ${(k)RPC_PARAMS}
 
 ##############################################################################
 # gather nodes
+CLUSTER_NODES=( $( sed 's/#.*$//g' $CLUSTER_DEF ) ) 
 if shuf </dev/null	# "shuf" is available
 then # shuffle nodes
-	CLUSTER_NODES=( $( grep -v '^#' $CLUSTER_DEF | shuf ) )
-else
-	CLUSTER_NODES=( $( grep -v '^#' $CLUSTER_DEF ) )	
+	CLUSTER_NODES=( $( shuf -e $CLUSTER_NODES ) )
 fi
+
+echo $CLUSTER_NODES ; exit 1
+
 
 ##############################################################################
 # get state for all cluster nodes;
