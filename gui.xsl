@@ -200,7 +200,7 @@
 			</x:apply-templates>
 		</table>
 		<div class="note">
-			<p>Updated <x:value-of select="@created" /></p>
+			<p>Updated <x:value-of select="@captured" /></p>
 		</div>		
 	</x:template>
 
