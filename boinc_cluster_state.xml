@@ -42,9 +42,6 @@ then # shuffle nodes
 	CLUSTER_NODES=( $( shuf -e $CLUSTER_NODES ) )
 fi
 
-echo $CLUSTER_NODES ; exit 1
-
-
 ##############################################################################
 # get state for all cluster nodes;
 # each task executes concurrently
