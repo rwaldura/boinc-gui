@@ -18,7 +18,7 @@ FROM
     LEFT JOIN task_state ON active_task_state = task_state.code
 WHERE
     task_state.shortname = 'EXECUTING'
-    -- and domain_name = 'droid19'
+    and domain_name = 'droid68'
 ORDER BY 
     captured DESC, domain_name, 3;
 
@@ -123,8 +123,8 @@ group by 1, 2, 3;
 
 -- ##### HISTORY OF A WORKUNIT ##########
 select
-    wu_name,
-    strftime('%Y-%m-%d %H:%M', r.captured, 'localtime') as updated, 
+    r.name,
+    strftime('%Y-%m-%d %H:%M', r.captured, 'localtime') as captured, 
     result_state.shortname AS result_state,
     task_state.shortname AS task_state,
     round(100 * fraction_done, 0) as '%done',
@@ -153,5 +153,5 @@ from
     left join result_state on state = result_state.code  
     left join task_state on active_task_state = task_state.code
 where
-    wu_name like 'MCM1_0211907_0213%' 
-order by wu_name, captured;
+    r.name like 'rb_02_13_593279_587747_ab_t000__robetta_cstwt_5.0_IGNORE_THE_REST_08_08_2970692_6%' 
+order by captured;

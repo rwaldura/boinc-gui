@@ -96,6 +96,23 @@
 						// updateChart is called next
 					}
 					
+
+					/*************************************************************************
+					 * Have a stable legend, independent of the actual data present. 
+					 * Create some dummy rows, one for each project.
+					 */
+					function addLegendRows(dt)
+					{
+						// order does not matter
+						dt.addRows( [
+							[ '', 'period_search', 'Period Search Application – Asteroids@home', 'Asteroids@home', '', 0 ],
+							[ '', 'rosetta', 'Rosetta – Rosetta@home', 'Rosetta@home', '', 0 ],
+							[ '', 'BHspin2', 'Universe BHspin v2 – Universe@home', 'Universe@home', '', 0 ],
+							[ '', 'mcm1', 'Mapping Cancer Markers – World Community Grid', 'World Community Grid', '', 0 ],
+							[ '', 'ecm', 'ecm – yoyo@home', 'yoyo@home', '', 0 ]
+						] );
+					}					
+					
 					/*************************************************************************
 					 * main
 					 */
@@ -109,16 +126,18 @@
 	  					/* 3 */ dt.addColumn('string', 'project');
 	  					/* 4 */ dt.addColumn('string', 'host');
 	  					/* 5 */ dt.addColumn('number', 'ops');
-		
+								
+						addLegendRows(dt);
+						
 						// populate the dt datatable
 	  					<x:apply-templates mode="dataTable" />
 
-						// SELECT app, COUNT(*) AS n FROM dt GROUP BY app
+						// SELECT app, SUM(ops) FROM dt GROUP BY app
 						// https://developers.google.com/chart/interactive/docs/reference#google_visualization_data_group
 						const grouped = google.visualization.data.group(
 							dt,
 							[ 3, 2 ], // group by "project" and "app_long" columns
-							[ { column: 0, aggregation: google.visualization.data.count, type: 'number' } ] );
+							[ { column: 5, aggregation: google.visualization.data.sum, type: 'number' } ] );
 						// ORDER BY project
 						grouped.sort(0);
 						
