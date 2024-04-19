@@ -13,7 +13,7 @@ Content-type: text/xml; charset=UTF-8
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="$XSLT" type="text/xsl" ?>
 <html>
-<head/>
+<head></head>
 <body>
 <table>
 _HTML_

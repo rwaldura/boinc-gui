@@ -122,8 +122,11 @@ WHERE
 group by 1, 2, 3;
 
 -- ##### HISTORY OF A WORKUNIT ##########
+WITH param AS (SELECT 
+	'xxx'
+	AS wu_name)
 select
-    r.name,
+    substr(r.name, 0, 33),
     strftime('%Y-%m-%d %H:%M', r.captured, 'localtime') as captured, 
     result_state.shortname AS result_state,
     task_state.shortname AS task_state,
@@ -152,6 +155,5 @@ from
     left join task using (task_id) 
     left join result_state on state = result_state.code  
     left join task_state on active_task_state = task_state.code
-where
-    r.name like 'rb_02_13_593279_587747_ab_t000__robetta_cstwt_5.0_IGNORE_THE_REST_08_08_2970692_6%' 
+    join param using (wu_name)
 order by captured;

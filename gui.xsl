@@ -233,7 +233,12 @@
 		<x:variable name="host"        select="../host_info" />
 		<tr>
 			<td>
-				<x:value-of select="$app/user_friendly_name" /> 
+			    <a>
+					<x:attribute name="href">
+						workunit.cgi?<x:value-of select="wu_name" />
+					</x:attribute>
+					<x:value-of select="$app/user_friendly_name" /> 
+			     </a>
 				<x:comment>
 					<x:value-of select="$app_version/app_name" /> 
 					<x:value-of select="$app_version/version_num" />

@@ -55,6 +55,13 @@ body {
 	padding: 0 0 10 0;
 }
 
+.title {
+/*	background-color: pink;*/
+	font-size: 120%;	
+	font-weight: bold;
+	padding: 0 0 10 0;
+}
+
 #pie_chart_div {
 	height: 260px;	
 }
