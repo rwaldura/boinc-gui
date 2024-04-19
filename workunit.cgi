@@ -19,9 +19,6 @@ Content-type: text/xml; charset=UTF-8
 _HTML_
 
 sqlite3 -html $DATABASE <<_SQL_
-.param init
-.param set @WU_NAME "'$WORKUNIT_NAME'"
-
 SELECT
     r.name,
     strftime('%Y-%m-%d %H:%M', r.captured, 'localtime') as captured, 
@@ -53,7 +50,7 @@ FROM
     LEFT JOIN result_state ON state = result_state.code  
     LEFT JOIN task_state ON active_task_state = task_state.code
 WHERE
-	wu_name = @WU_NAME
+	wu_name = '$WORKUNIT_NAME'
 ORDER BY 
 	captured
 _SQL_
