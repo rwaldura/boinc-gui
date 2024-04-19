@@ -63,6 +63,7 @@ CREATE INDEX result_created_host ON result(host_cpid, captured);
 CREATE INDEX result_created_date ON result(date(captured));
 CREATE INDEX result_created_datetime ON result(datetime(captured));
 CREATE INDEX result_name ON result(name);
+CREATE INDEX result_wu_name ON result(wu_name);
 
 -- ---------------------------------------------------------------------------
 CREATE TABLE message (
