@@ -198,7 +198,7 @@
 			/* 2: app (long)  */ '<x:value-of select="$app/user_friendly_name" /> – <x:value-of select="$project/project_name" />',
 			/* 3: project     */ '<x:value-of select="$project/project_name" />',
 			/* 4: host        */ '<x:value-of select="$host/domain_name" />',
-			/* 5: ops         */ <x:value-of select="round(($host/p_fpops + $host/p_iops) div (100 * 1000 * 1000))" />
+			/* 5: ops         */ <x:value-of select="round((10 * $host/p_fpops + $host/p_iops) div (100 * 1000 * 1000))" />
 			] );			
 	</x:template>	
 
