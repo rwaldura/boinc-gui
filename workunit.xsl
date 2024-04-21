@@ -5,7 +5,7 @@
 	source XML doc, and executed (processed) client-side, by the browser.
   -->
 
-<!DOCTYPE x:stylesheet [ <!ENTITY nbsp "&#160;"> ]>
+<!DOCTYPE xsl:stylesheet [ <!ENTITY hellip "&#8230;"> ]>
 
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
@@ -24,13 +24,15 @@
 		<head>
 			<link rel="stylesheet" href="styles.css" />
 		</head>
-		<x:apply-templates />
+	</x:template>
+
+	<x:template match="div[@id = 'wu_name']">
+		<div class="title">
+			Workunit <x:value-of select="." />
+		</div>
 	</x:template>
 
 	<x:template match="table">
-		<div class="title">
-			Workunit <x:value-of select="TR/TD[1]" />
-		</div>
 		<div>
 			<table id="boinc_cluster_state">
 				<x:apply-templates />
@@ -38,14 +40,22 @@
 		</div>
 	</x:template>
 
-	<!-- workunit name -->
-	<x:template match="TR/TH[1]">
-		<x:comment>skipped</x:comment>
-	</x:template>		
-
-	<!-- workunit name, first cell of each row -->
+	<!-- workunit result name -->
 	<x:template match="TR/TD[1]">
-		<x:comment>skipped</x:comment>
+		<td>
+			<x:choose>
+				<!-- when name is too long, truncate and display in full in a tooltip -->
+				<x:when test="string-length(.) &gt; 16">
+					<div class="tooltip">
+						<x:value-of select="substring(., 1, 16)" />&hellip;
+						<span class="tooltip-text"><x:value-of select="." /></span>
+					</div>
+				</x:when>
+				<x:otherwise>
+					<x:value-of select="." />
+				</x:otherwise>
+			</x:choose>
+		</td>
 	</x:template>		
 	
 </x:stylesheet>

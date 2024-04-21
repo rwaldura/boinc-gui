@@ -9,8 +9,6 @@
 	https://boinc.berkeley.edu/trac/wiki/GuiRpcProtocol#get_state
   -->
 
-<!DOCTYPE x:stylesheet [ <!ENTITY nbsp "&#160;"> ]>
-
 <x:stylesheet 
 	xmlns:x="http://www.w3.org/1999/XSL/Transform" 
 	version="1.0">

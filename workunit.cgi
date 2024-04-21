@@ -3,18 +3,19 @@
 readonly DATABASE=boinc_cluster_state.db
 # readonly DATABASE=t/_test.db
 
-readonly XSLT="workunit.xsl"
+readonly xslt="workunit.xsl"
 
-readonly WORKUNIT_NAME=$QUERY_STRING
+readonly workunit_name=$QUERY_STRING
 
 cat << _HTML_
 Content-type: text/xml; charset=UTF-8
 
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="$XSLT" type="text/xsl" ?>
+<?xml-stylesheet href="$xslt" type="text/xsl" ?>
 <html>
 <head></head>
 <body>
+<div id="wu_name">$workunit_name</div>
 <table>
 _HTML_
 
@@ -50,7 +51,7 @@ FROM
     LEFT JOIN result_state ON state = result_state.code  
     LEFT JOIN task_state ON active_task_state = task_state.code
 WHERE
-	wu_name = '$WORKUNIT_NAME'
+	wu_name = '$workunit_name'
 ORDER BY 
 	captured
 _SQL_
