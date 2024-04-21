@@ -19,7 +19,7 @@ Content-type: text/xml; charset=UTF-8
 <table>
 _HTML_
 
-sqlite3 -html $DATABASE <<_SQL_
+sqlite3 -header -html $DATABASE <<_SQL_
 SELECT
     r.name,
     strftime('%Y-%m-%d %H:%M', r.captured, 'localtime') as captured, 
