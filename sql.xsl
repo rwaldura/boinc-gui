@@ -104,23 +104,23 @@
 			task_id
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
-			'<x:value-of select="name" />' ,
-			'<x:value-of select="wu_name" />' ,
+			'<x:value-of select="name" />' , -- result name
+			'<x:value-of select="wu_name" />' , -- workunit name
 			<x:value-of select="round($workunit/rsc_fpops_est div 1000000)" />,
-			'<x:value-of select="$host/host_cpid" />' ,
-			'<x:value-of select="$app/name" />' ,
-			'<x:value-of select="$app/user_friendly_name" />' ,
-			<x:value-of select="$app_version/version_num" /> ,
-			<x:value-of select="round($app_version/flops div 1000000)" /> ,
-			'<x:value-of select="$project/project_name" />' ,
-			'<x:value-of select="$project/master_url" />' ,
-			<x:value-of select="final_cpu_time" /> ,
-			<x:value-of select="final_elapsed_time" /> ,
-			<x:value-of select="exit_status" /> ,
-			<x:value-of select="state" /> ,
-			datetime(<x:value-of select="report_deadline" />, 'unixepoch') ,
-			datetime(<x:value-of select="received_time" />, 'unixepoch') ,
-			<x:value-of select="estimated_cpu_time_remaining" /> ,
+			'<x:value-of select="$host/host_cpid" />' , -- host
+			'<x:value-of select="$app/name" />' , -- app name 
+			'<x:value-of select="$app/user_friendly_name" />' , -- app name (long)
+			<x:value-of select="$app_version/version_num" /> , -- app version
+			<x:value-of select="round($app_version/flops div 1000000)" /> , -- app flops
+			'<x:value-of select="$project/project_name" />' , -- project name
+			'<x:value-of select="$project/master_url" />' , -- project URL 
+			<x:value-of select="final_cpu_time" /> , -- CPU time
+			<x:value-of select="final_elapsed_time" /> , -- elapsed time
+			<x:value-of select="exit_status" /> , -- exit code
+			<x:value-of select="state" /> , -- result state
+			datetime(<x:value-of select="report_deadline" />, 'unixepoch') , -- report deadline 
+			datetime(<x:value-of select="received_time" />, 'unixepoch') , -- received time
+			<x:value-of select="estimated_cpu_time_remaining" /> , -- CPU time
 			<x:choose>
 				<x:when test="active_task">last_insert_rowid()</x:when>
 				<x:otherwise>NULL</x:otherwise>
@@ -132,10 +132,10 @@
 	<x:template match="old_result">
 		INSERT INTO result (
 			captured,
-			host_cpid,
-			wu_name,
-			project_master_url,
 			name,
+			wu_name,
+			host_cpid,
+			project_master_url,
 			app_name,
 			exit_status,
 			final_elapsed_time, 
@@ -144,16 +144,16 @@
 			reported
 		) VALUES (
 			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
-			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />') ,
-			(SELECT DISTINCT wu_name FROM result WHERE name = '<x:value-of select="result_name" />') ,
-			'<x:value-of select="project_url" />' ,
-			'<x:value-of select="result_name" />' ,
-			'<x:value-of select="app_name" />' ,
-			<x:value-of select="exit_status" /> ,
-			<x:value-of select="elapsed_time" /> ,
-			<x:value-of select="cpu_time" /> ,
-			datetime(<x:value-of select="completed_time" />, 'unixepoch') ,
-			datetime(<x:value-of select="create_time" />, 'unixepoch')
+			'<x:value-of select="result_name" />' , -- result name
+			(SELECT DISTINCT wu_name FROM result WHERE name = '<x:value-of select="result_name" />') , -- workunit name
+			(SELECT host_cpid FROM host WHERE hostname = '<x:value-of select="../../../@hostname" />') , -- host 
+			'<x:value-of select="project_url" />' , -- project URL
+			'<x:value-of select="app_name" />' , -- app name 
+			<x:value-of select="exit_status" /> , -- exit code
+			<x:value-of select="elapsed_time" /> , -- elapsed time
+			<x:value-of select="cpu_time" /> , -- CPU time
+			datetime(<x:value-of select="completed_time" />, 'unixepoch') , -- completed time
+			datetime(<x:value-of select="create_time" />, 'unixepoch') -- created time
 		);
 	</x:template>	
 
