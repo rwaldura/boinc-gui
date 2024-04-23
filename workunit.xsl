@@ -45,9 +45,9 @@
 		<td>
 			<x:choose>
 				<!-- when name is too long, truncate and display in full in a tooltip -->
-				<x:when test="string-length(.) &gt; 16">
+				<x:when test="string-length(.) &gt; 32">
 					<div class="tooltip">
-						<x:value-of select="substring(., 1, 16)" />&hellip;
+						<x:value-of select="substring(., 1, 32)" />&hellip;
 						<span class="tooltip-text"><x:value-of select="." /></span>
 					</div>
 				</x:when>
