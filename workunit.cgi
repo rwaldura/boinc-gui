@@ -13,7 +13,7 @@ Content-type: text/xml; charset=UTF-8
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="$xslt" type="text/xsl" ?>
 <html>
-<head></head>
+<head/>
 <body>
 <div id="wu_name">$workunit_name</div>
 <table>
@@ -39,11 +39,14 @@ SELECT
         WHEN final_elapsed_time > 60 THEN round(final_elapsed_time / 60) || ' minutes'
     END AS elapsed,
     exit_status, 
-    app_name AS BOINC_App,  
+    app_user_friendly_name || ' v' || app_version_num AS BOINC_App,  
     domain_name,
     strftime('%Y-%m-%d %H:%M', r.received, 'localtime') as received,
     strftime('%Y-%m-%d %H:%M', r.completed, 'localtime') as completed,
-    strftime('%Y-%m-%d %H:%M', r.reported, 'localtime') as reported
+    strftime('%Y-%m-%d %H:%M', r.reported, 'localtime') as reported,
+    project_name,
+    project_master_url,
+	h.product_name || ' - ' || h.os_version AS node_descr
 FROM
     result r
     JOIN host h USING (host_cpid) 
