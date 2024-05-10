@@ -12,4 +12,4 @@ Access-Control-Allow-Origin: *
 
 _HTTP_
 
-exec ./cluster-activity.json "${days:-$DEFAULT_DAYS}" 2>/dev/null
+exec ./cluster-activity.json ${days:-$DEFAULT_DAYS} 2>/dev/null
