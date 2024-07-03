@@ -24,7 +24,7 @@
 		<head>
 			<link rel="stylesheet" href="styles.css" />
 			<title>
-				Workunit <x:value-of select="../body/div[@id = 'wu_name']" />
+				Workunit <x:value-of select="//div[@id = 'wu_name']" />
 			</title>
 		</head>
 	</x:template>

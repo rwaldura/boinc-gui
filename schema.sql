@@ -18,7 +18,13 @@ CREATE TABLE host (
     p_mfpops INTEGER,   -- mega-ops (*10^6), floating point
     p_miops INTEGER,    -- mega-ops, integer
     p_features STRING,
-    message_count INTEGER
+    message_count INTEGER,
+	coproc_type STRING,
+	coproc_peak_flops INTEGER, 
+	coproc_name STRING, 
+	opencl_platform_version STRING,
+	opencl_device_version STRING,
+	opencl_driver_version STRING
 );
 
 -- ---------------------------------------------------------------------------
