@@ -47,6 +47,30 @@
 			<x:value-of select="round( p_iops div 1000000)" /> ,
 			'<x:value-of select="p_features" />'
 		);
+		
+		<x:apply-templates />
+	</x:template>	
+
+	<!-- GPU information -->
+	<x:template match="host_info/coprocs/coproc/coproc_opencl">
+		UPDATE host SET (
+			updated,
+			coproc_type,
+			coproc_peak_flops, 
+			coproc_name, 
+			opencl_platform_version,
+			opencl_device_version,
+			opencl_driver_version
+		) = (
+			'<x:value-of select="/boinc_cluster_state/@captured" />' ,
+			'<x:value-of select="../type" />' ,
+			<x:value-of select="round(../peak_flops)" /> ,
+			'<x:value-of select="name" />' ,
+			'<x:value-of select="opencl_platform_version" />' ,
+			'<x:value-of select="opencl_device_version" />' ,
+			'<x:value-of select="opencl_driver_version" />' 
+		)
+		WHERE host_cpid = '<x:value-of select="../../../host_cpid" />';
 	</x:template>	
 
 	<!-- results in processing, actively or not -->
