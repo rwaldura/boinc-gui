@@ -78,7 +78,7 @@
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
-		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name]" />
+		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name and version_num = $workunit/version_num]" />
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
 
@@ -134,7 +134,7 @@
 			'<x:value-of select="$host/host_cpid" />' , -- host
 			'<x:value-of select="$app/name" />' , -- app name 
 			'<x:value-of select="$app/user_friendly_name" />' , -- app name (long)
-			<x:value-of select="$app_version/version_num" /> , -- app version
+			<x:value-of select="version_num" /> , -- app version
 			<x:value-of select="round($app_version/flops div 1000000)" /> , -- app flops
 			'<x:value-of select="$project/project_name" />' , -- project name
 			'<x:value-of select="$project/master_url" />' , -- project URL 
