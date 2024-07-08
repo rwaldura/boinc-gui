@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- To use a statically linked science app for Asteroids -->
+<!-- See https://asteroidsathome.net/boinc/forum_thread.php?id=1031 -->
+<app_info>
+	<app>
+		<name>period_search</name>
+	</app>
+	<file_info>
+		<name>period_search_BOINC_linux_10220_armv7_vfpv3_linux_Release_static</name>
+		<executable/>
+	</file_info>
+	<app_version>
+		<app_name>period_search</app_name>
+		<version_num>10220</version_num>
+		<avg_ncpus>1</avg_ncpus>
+		<file_ref>
+			<file_name>period_search_BOINC_linux_10220_armv7_vfpv3_linux_Release_static</file_name>
+			<main_program/>
+		</file_ref>
+	</app_version>
+</app_info>

@@ -134,7 +134,7 @@
 						// https://developers.google.com/chart/interactive/docs/reference#google_visualization_data_group
 						const grouped = google.visualization.data.group(
 							dt,
-							[ 3, 2 ], // group by "project" and "app_long" columns
+							[ 3, 1 ], // group by "project" and "app_long" columns
 							[ { column: 5, aggregation: google.visualization.data.sum, type: 'number' } ] );
 						// ORDER BY project
 						grouped.sort(0);
