@@ -78,7 +78,7 @@
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
-		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name and version_num = $workunit/version_num]" />
+		<x:variable name="app_version" select="../app_version[app_name = $workunit/app_name and version_num = current()/version_num]" />
 		<x:variable name="app"         select="../app[name = $workunit/app_name]" />
 		<x:variable name="host"        select="../host_info" />
 
