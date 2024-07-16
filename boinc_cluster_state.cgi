@@ -11,8 +11,10 @@ readonly LATEST_STATE=/tmp/boinc_cluster_state.xml
 # the browser will use this stylesheet to transform the result
 readonly XSLT=gui.xsl
 
-# Refresh the page every hour or so
-cat <<_HTTP_
+if head "$LATEST_STATE" 2>/dev/null | grep -q '^<?xml '
+then # valid XML, let's proceed
+	# Refresh the page every hour or so
+	cat <<_HTTP_
 Content-Type: text/xml; charset=UTF-8
 Access-Control-Allow-Origin: *
 Refresh: 3333
@@ -21,5 +23,15 @@ Refresh: 3333
 <?xml-stylesheet href="$XSLT" type="text/xsl" ?>
 _HTTP_
 
-# skip the XML declaration
-tail +2 "$LATEST_STATE"
+	# skip the XML declaration
+	exec tail +2 "$LATEST_STATE"
+else
+	cat <<_HTTP_
+Content-Type: text/plain
+
+Invalid XML file $LATEST_STATE:
+_HTTP_
+	head "$LATEST_STATE"
+	exit 1
+fi
+
