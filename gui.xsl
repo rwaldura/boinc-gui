@@ -222,7 +222,7 @@
 	</x:template>
 
 	<!-- results with tasks actively executing -->
-	<x:template match="result[active_task/active_task_state = 1]" mode="html">
+	<x:template match="result[active_task]" mode="html">
 		<!-- get related structs -->
 		<x:variable name="project"     select="../project[master_url = current()/project_url]" />
 		<x:variable name="workunit"    select="../workunit[name = current()/wu_name]" />
@@ -231,22 +231,16 @@
 		<x:variable name="host"        select="../host_info" />
 		<tr>
 			<td>
-			    <a>
-					<x:attribute name="href">
-						workunit.cgi?<x:value-of select="wu_name" />
-					</x:attribute>
+			    <a href="workunit.cgi?{wu_name}">
 					<x:value-of select="$app/user_friendly_name" /> 
 			     </a>
 				<x:comment>
 					<x:value-of select="$app_version/app_name" /> 
-					<x:value-of select="$app_version/version_num" />
+					- <x:value-of select="$app_version/version_num" />
 				</x:comment>
 			</td>
 			<td>
-			    <a>
-					<x:attribute name="href">
-						<x:value-of select="$project/master_url" />
-					</x:attribute>
+			    <a href="{$project/master_url}">
 					<x:value-of select="$project/project_name" /> 
 			     </a>
 			</td>
@@ -275,9 +269,10 @@
 			</span>
 			<x:variable name="progress_bar_width" select="150" /> <!-- defined in styles.css -->
 			<div class="progress-bar-bg" />
-			<div class="progress-bar">
-				<x:attribute name="style">
-					width: <x:value-of select="round($progress_bar_width * fraction_done)"/>px 
+			<div style="width: { round($progress_bar_width * fraction_done) }px">
+				<x:attribute name="class">
+					progress-bar
+					<x:if test="active_task_state = 1">executing</x:if>
 				</x:attribute>
 			</div>
 		</div>

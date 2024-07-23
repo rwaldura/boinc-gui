@@ -135,6 +135,10 @@ body {
 	top: -8px;
 	border-radius: 4px;
 	height: 8px;
+	background-color: #aaaaaa;
+}
+
+/* .progress-bar */ .executing {
 	background-color: lightgreen;
 }
 
