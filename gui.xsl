@@ -105,6 +105,7 @@
 						dt.addRows( [
 							[ '', 'period_search', 'Period Search Application – Asteroids@home', 'Asteroids@home', '', 0 ],
 							[ '', 'rosetta', 'Rosetta – Rosetta@home', 'Rosetta@home', '', 0 ],
+							[ '', 'einstein', 'xx – Einstein@home', 'Einstein@home', '', 0 ],
 							[ '', 'BHspin2', 'Universe BHspin v2 – Universe@home', 'Universe@home', '', 0 ],
 							[ '', 'mcm1', 'Mapping Cancer Markers – World Community Grid', 'World Community Grid', '', 0 ],
 							[ '', 'ecm', 'ecm – yoyo@home', 'yoyo@home', '', 0 ]
