@@ -37,6 +37,11 @@ readonly COLUMN_DEFS='
 		"type": "number"
 	},
 	{
+		"id": "einst",
+		"label": "Einstein",
+		"type": "number"
+	},
+	{
 		"id": "roset",
 		"label": "Rosetta",
 		"type": "number"
@@ -71,7 +76,8 @@ readonly SQL_SELECT_PIVOT_PROJECT="
         COUNT(DISTINCT CASE WHEN project_name = 'World Community Grid' THEN result.name END) AS wcg,
         COUNT(DISTINCT CASE WHEN project_name = 'Asteroids@home'       THEN result.name END) AS astr,
         COUNT(DISTINCT CASE WHEN project_name = 'Rosetta@home'         THEN result.name END) AS rose,
-        COUNT(DISTINCT CASE WHEN project_name = 'Universe@Home'        THEN result.name END) AS univ
+        COUNT(DISTINCT CASE WHEN project_name = 'Universe@Home'        THEN result.name END) AS univ,
+        COUNT(DISTINCT CASE WHEN project_name = 'Einstein@Home'        THEN result.name END) AS einst
     FROM 
         result 
         JOIN task USING (task_id)
@@ -90,6 +96,7 @@ readonly SQL_SELECT_JSON="
                 json_object('v', 'Date(' || created_y || ',' || (created_m - 1) || ',' || created_d || ')'),
                 -- order must match COLUMN_DEFS above
                 json_object('v', astr),
+                json_object('v', einst),
                 json_object('v', rose),
                 json_object('v', univ),
                 json_object('v', wcg),
