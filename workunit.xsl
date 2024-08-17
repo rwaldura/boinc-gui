@@ -66,6 +66,34 @@
 			</p>
 		</div>
 		<div>
+			<h1><x:value-of select="TR/TD[1]" /></h1>
+			<p>
+				<table id="boinc_cluster_state">
+					<tr>
+						<th>Received</th>
+						<td><x:value-of select="TR/TD[11]" /></td>
+					</tr>
+					<!-- only available once finished -->
+					<x:if test="TR/TD[7] != 'NULL'">
+						<tr>
+							<th>Elapsed</th>
+							<td><x:value-of select="TR/TD[7]" /></td>
+						</tr>
+						<tr>
+							<th>Exit Code</th>
+							<td><x:value-of select="TR/TD[8]" /></td>
+						</tr>
+						<tr>
+							<th>Completed</th>
+							<td><x:value-of select="TR/TD[12]" /></td>
+						</tr>
+						<tr>
+							<th>Reported</th>
+							<td><x:value-of select="TR/TD[13]" /></td>
+						</tr>
+					</x:if>
+				</table>
+			</p>
 			<p>
 				<table id="boinc_cluster_state">
 					<x:apply-templates />
@@ -77,45 +105,25 @@
 	<!-- table headers -->
 	<x:template match="table/TR[1]">
 		<tr>
-			<th>Result</th> 	<!--  1 -->
-			<th>Recorded</th> 	<!--  2 -->
-			<th>State</th> 		<!--  3 -->
-			<th>Task</th> 		<!--  4 -->
-			<th>% done</th> 	<!--  5 -->
+			<th>Recorded</th> 	<!--  2 in XML -->
+			<th>%done</th> 		<!--  5 -->
 			<th>Remaining</th> 	<!--  6 -->
-			<th>Elapsed</th> 	<!--  7 -->
-			<th>Exit Code</th> 	<!--  8 -->
-			<!-- app name --> 	<!--  9 -->
-			<!-- hostname -->	<!-- 10 -->
-			<th>Received</th> 	<!-- 11 -->
-			<th>Completed</th> 	<!-- 12 -->
-			<th>Reported</th> 	<!-- 13 -->
+			<th>Task</th> 		<!--  4 -->
+			<th>State</th> 		<!--  3 -->
+			<th>Scheduler</th> 	<!-- 17 in XML -->
 		</tr>
 	</x:template>		
 
-	<!-- workunit result name -->
-	<x:template match="TR/TD[1]">
-		<td>
-			<x:choose>
-				<!-- when name is too long, truncate and display in full in a tooltip -->
-				<x:when test="string-length(.) &gt; 32">
-					<div class="tooltip">
-						<x:value-of select="substring(., 1, 32)" />&hellip;
-						<span class="tooltip-text"><x:value-of select="." /></span>
-					</div>
-				</x:when>
-				<x:otherwise>
-					<x:value-of select="." />
-				</x:otherwise>
-			</x:choose>
-		</td>
+	<!-- for each row of input -->
+	<x:template match="TR">
+		<tr>
+			<x:copy-of select="TD[ 2]" />
+			<x:copy-of select="TD[ 5]" />
+			<x:copy-of select="TD[ 6]" />
+			<x:copy-of select="TD[ 4]" />
+			<x:copy-of select="TD[ 3]" />
+			<x:copy-of select="TD[17]" />
+		</tr>
 	</x:template>		
 
-	<!-- drop some columns -->
-	<x:template match="TR/TD[9]" />
-	<x:template match="TR/TD[10]" />
-	<x:template match="TR/TD[14]" />
-	<x:template match="TR/TD[15]" />
-	<x:template match="TR/TD[16]" />
-	
 </x:stylesheet>
